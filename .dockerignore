@@ -1,0 +1,76 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Docker
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# Documentation
+README.md
+SETUP.md
+DEVELOPER_SPEC.md
+*.md
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Laravel
+vendor/
+node_modules/
+.env
+.env.*
+.env.backup
+.env.testing
+storage/logs/*.log
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/framework/testing/*
+bootstrap/cache/*.php
+.phpunit.result.cache
+auth.json
+npm-debug.log
+yarn-error.log
+
+# Testing
+tests/
+phpunit.xml
+.phpunit.cache
+
+# Build artifacts
+public/hot
+public/storage
+public/build/manifest.json
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.cache
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Development tools
+Makefile
+.editorconfig
+.php-cs-fixer.php

@@ -1,0 +1,136 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/frankenphp/Dockerfile.dev
+    container_name: dashboard-al-iman-app-dev
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - .:/app
+      - storage_uploads:/app/storage/app/uploads
+      - app_logs:/app/storage/logs
+      - ./docker/frankenphp/Caddyfile.dev:/etc/caddy/Caddyfile
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: dashboard_al_iman
+      DB_USERNAME: postgres
+      DB_PASSWORD: secret
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+      AWS_ENDPOINT: http://minio:9000
+      AWS_USE_PATH_STYLE_ENDPOINT: "true"
+      XDEBUG_MODE: debug
+    depends_on:
+      - postgres
+      - redis
+      - mailpit
+      - minio
+    networks:
+      - app-network
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: dashboard-al-iman-postgres-dev
+    environment:
+      POSTGRES_DB: dashboard_al_iman
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: dashboard-al-iman-redis-dev
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: dashboard-al-iman-mailpit-dev
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    volumes:
+      - mailpit_data:/data
+    networks:
+      - app-network
+
+  minio:
+    image: minio/minio:latest
+    container_name: dashboard-al-iman-minio-dev
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
+    volumes:
+      - minio_data:/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/frankenphp/Dockerfile.dev
+    command: php /app/artisan queue:work redis --sleep=3 --tries=3 --max-time=3600
+    volumes:
+      - .:/app
+      - storage_uploads:/app/storage/app/uploads
+      - app_logs:/app/storage/logs
+    environment:
+      APP_ENV: local
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: dashboard_al_iman
+      DB_USERNAME: postgres
+      DB_PASSWORD: secret
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  storage_uploads:
+  minio_data:
+  mailpit_data:
+  app_logs:
+
+networks:
+  app-network:
+    driver: bridge

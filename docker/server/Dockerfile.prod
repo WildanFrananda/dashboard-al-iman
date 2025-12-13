@@ -1,0 +1,82 @@
+FROM dunglas/frankenphp:php8.4-bookworm AS base
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq-dev \
+    libzip-dev \
+    zip \
+    unzip \
+    supervisor \
+    git \
+    curl \
+    gnupg \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js & PNPM
+RUN mkdir -p /etc/apt/keyrings && \
+    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list && \
+    apt-get update && \
+    apt-get install -y nodejs && \
+    npm install -g pnpm@latest  
+
+# Install PHP Extensions
+RUN install-php-extensions \
+    pdo_pgsql \
+    pgsql \
+    opcache \
+    redis \
+    zip \
+    pcntl \
+    bcmath \
+    intl \
+    exif \
+    gd
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Build stage
+FROM base AS build
+
+WORKDIR /app
+
+# 1. Install Composer Dependencies
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --no-scripts
+
+# 2. Install Node Dependencies (Pakai PNPM)
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
+
+# 3. Copy Source Code
+COPY . .
+
+# 4. Finalize Setup
+RUN composer dump-autoload --optimize && \
+    php artisan storage:link || true
+
+# 5. Build Frontend Assets
+RUN pnpm run build
+
+# (Opsional) Hapus devDependencies node_modules agar image lebih kecil
+# Lakukan ini HANYA jika server production tidak butuh node_modules (misal SSR tidak dipakai)
+# RUN pnpm prune --prod
+
+# Final stage
+FROM base
+
+WORKDIR /app
+
+# Copy seluruh aplikasi yang sudah di-build (termasuk public/build dari pnpm)
+COPY --from=build /app /app
+
+# Copy Configs
+COPY docker/frankenphp/php.prod.ini /usr/local/etc/php/conf.d/custom.ini
+COPY docker/frankenphp/Caddyfile /etc/caddy/Caddyfile
+
+# Setup Permission
+RUN chown -R www-data:www-data /app /data/caddy /config/caddy
+
+EXPOSE 80 443
+
+CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
