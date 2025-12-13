@@ -2,7 +2,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: docker/frankenphp/Dockerfile.prod
+      dockerfile: docker/server/Dockerfile.prod
     container_name: dashboard-al-iman-app
     restart: unless-stopped
     ports:
@@ -123,7 +123,7 @@ services:
   worker:
     build:
       context: .
-      dockerfile: docker/frankenphp/Dockerfile.prod
+      dockerfile: docker/server/Dockerfile.prod
     restart: unless-stopped
     command: php /app/artisan queue:work redis --sleep=3 --tries=3 --max-time=3600 --queue=default,high,low
     volumes:

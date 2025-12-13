@@ -1,7 +1,5 @@
-FROM dunglas/frankenphp:php8.4-bookworm
+FROM dunglas/frankenphp:php8.5-bookworm
 
-# 1. Install dependencies dasar dulu (curl & gnupg dibutuhkan untuk install Node)
-# HAPUS 'nodejs' dan 'npm' dari sini, kita install manual di bawah
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     libzip-dev \
@@ -14,15 +12,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. Setup Node.js 22 (LTS) dari NodeSource
+# Install Node.js 25 and PNPM
 RUN mkdir -p /etc/apt/keyrings && \
     curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
-    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list && \
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_25.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list && \
     apt-get update && \
     apt-get install -y nodejs && \
-    npm install -g npm@latest
+    npm install -g pnpm@latest
 
-# 3. Install PHP extensions
+# Install PHP extensions
 RUN install-php-extensions \
     pdo_pgsql \
     pgsql \
@@ -36,14 +34,14 @@ RUN install-php-extensions \
     gd \
     xdebug
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Install Composer 2.9.2
+COPY --from=composer:2.9.2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
 # Copy Configs
-COPY docker/frankenphp/php.dev.ini /usr/local/etc/php/conf.d/99-custom.ini
-COPY docker/frankenphp/Caddyfile.dev /etc/caddy/Caddyfile
+COPY docker/server/php.dev.ini /usr/local/etc/php/conf.d/99-custom.ini
+COPY docker/server/Caddyfile.dev /etc/caddy/Caddyfile
 
 # Permission setup
 RUN mkdir -p storage/logs bootstrap/cache && \

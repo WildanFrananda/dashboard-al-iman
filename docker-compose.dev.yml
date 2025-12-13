@@ -2,7 +2,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: docker/frankenphp/Dockerfile.dev
+      dockerfile: docker/server/Dockerfile.dev
     container_name: dashboard-al-iman-app-dev
     ports:
       - "80:80"
@@ -11,7 +11,7 @@ services:
       - .:/app
       - storage_uploads:/app/storage/app/uploads
       - app_logs:/app/storage/logs
-      - ./docker/frankenphp/Caddyfile.dev:/etc/caddy/Caddyfile
+      - ./docker/server/Caddyfile.dev:/etc/caddy/Caddyfile
     environment:
       APP_ENV: local
       APP_DEBUG: "true"
@@ -101,7 +101,7 @@ services:
   worker:
     build:
       context: .
-      dockerfile: docker/frankenphp/Dockerfile.dev
+      dockerfile: docker/server/Dockerfile.dev
     command: php /app/artisan queue:work redis --sleep=3 --tries=3 --max-time=3600
     volumes:
       - .:/app
