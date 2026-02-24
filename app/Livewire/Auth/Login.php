@@ -10,12 +10,10 @@ use Livewire\Attributes\Title;
 #[Title('Login - Al-Iman School')]
 class Login extends Component
 {
-    // Dummy Properties
     public $email = '';
     public $password = '';
     public $remember = false;
 
-    // Validation Rules (Visual feedback purpose)
     protected $rules = [
         'email' => 'required|email',
         'password' => 'required|min:6',
@@ -23,7 +21,6 @@ class Login extends Component
 
     public function mount()
     {
-        // Optional: Pre-fill for prototype demo purposes
         $this->email = 'demo@aliman.sch.id';
     }
 
