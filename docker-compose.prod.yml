@@ -155,6 +155,8 @@ services:
       - app-network
     deploy:
       replicas: 2
+    healthcheck:
+      disable: true
       # resources:
       #   limits:
       #     cpus: '0.5'
