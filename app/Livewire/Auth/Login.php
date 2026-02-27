@@ -21,15 +21,19 @@ class Login extends Component
 
     public function mount()
     {
-        $this->email = 'demo@aliman.sch.id';
+        // $this->email = 'demo@aliman.sch.id';
     }
 
     public function login()
     {
         $this->validate();
-        sleep(1); 
 
-        return redirect()->route('dashboard');
+        if (\Illuminate\Support\Facades\Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
+            session()->regenerate();
+            return redirect()->intended(route('dashboard'));
+        }
+
+        $this->addError('email', 'The provided credentials do not match our records.');
     }
 
     public function render()

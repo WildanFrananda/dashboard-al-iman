@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class ProfilGuru extends Model
+{
+    use HasFactory;
+
+    protected $table = 'profil_guru';
+
+    protected $fillable = [
+        'user_id',
+        'nip',
+        'nama_lengkap',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function jadwalMengajars()
+    {
+        return $this->hasMany(JadwalMengajar::class, 'guru_id');
+    }
+}

@@ -16,6 +16,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     protected $hidden = [
@@ -40,5 +41,15 @@ class User extends Authenticatable
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
+    }
+
+    public function profilMurid()
+    {
+        return $this->hasOne(ProfilMurid::class, 'user_id');
+    }
+
+    public function profilGuru()
+    {
+        return $this->hasOne(ProfilGuru::class, 'user_id');
     }
 }
