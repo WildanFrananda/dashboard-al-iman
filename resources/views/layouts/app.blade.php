@@ -13,6 +13,7 @@
     <!-- Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+    @fluxAppearance
 </head>
 <body class="h-full antialiased font-sans text-gray-900 bg-[#F5F5F5]" x-data="{ sidebarOpen: false }">
 
@@ -119,5 +120,6 @@
     </div>
 
     @livewireScripts
+    @fluxScripts
 </body>
 </html>
