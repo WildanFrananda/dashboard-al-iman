@@ -12,38 +12,34 @@ use Livewire\WithPagination;
 
 #[Layout('layouts.app')]
 #[Title('Manage User - SIAKMAN')]
-class ManageUser extends Component
-{
+class ManageUser extends Component {
     use WithPagination;
 
     public $search = '';
+
     public $selectedRole = 'all';
 
-    public function mount()
-    {
+    public function mount() {
         if (auth()->check() && auth()->user()->role !== 'admin') {
-            abort(403, 'Unauthorized access - khusus admin');
+            return redirect()->route('dashboard');
         }
     }
 
-    public function updatedSearch()
-    {
+    public function updatedSearch() {
         $this->resetPage();
     }
 
-    public function updatedSelectedRole()
-    {
+    public function updatedSelectedRole() {
         $this->resetPage();
     }
 
-    public function render()
-    {
+    public function render() {
         $query = User::query();
 
         if ($this->search !== '') {
-            $query->where(function($q) {
-                $q->where('name', 'like', '%' . $this->search . '%')
-                  ->orWhere('email', 'like', '%' . $this->search . '%');
+            $query->where(function ($q) {
+                $q->where('name', 'like', '%'.$this->search.'%')
+                    ->orWhere('email', 'like', '%'.$this->search.'%');
             });
         }
 
@@ -54,7 +50,7 @@ class ManageUser extends Component
         $users = $query->latest()->paginate(10);
 
         return view('livewire.manage-user', [
-            'users' => $users
+            'users' => $users,
         ]);
     }
 }

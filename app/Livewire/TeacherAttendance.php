@@ -12,8 +12,11 @@ use Livewire\Component;
 #[Title('Absensi Pengajar - SIAKMAN')]
 class TeacherAttendance extends Component {
     public $teacherName = '';
+
     public $classId = '';
+
     public $date = '';
+
     public $students = [];
 
     public function mount() {
@@ -22,12 +25,12 @@ class TeacherAttendance extends Component {
             [
                 'id' => 1,
                 'name' => 'Alila Nafisah',
-                'status' => 'Hadir'
+                'status' => 'Hadir',
             ],
             [
                 'id' => 2,
                 'name' => 'Khairril Anwar',
-                'status' => 'Hadir'
+                'status' => 'Hadir',
             ],
         ];
     }
@@ -35,7 +38,7 @@ class TeacherAttendance extends Component {
     public function submit() {
         // Logika untuk menyimpan data absensi
         // dd($this->teacherName, $this->classId, $this->date, $this->students);
-        
+
         session()->flash('message', 'Data absensi berhasil disimpan.');
     }
 
