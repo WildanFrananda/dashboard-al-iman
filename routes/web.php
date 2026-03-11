@@ -5,6 +5,8 @@ declare(strict_types=1);
 use App\Livewire\Attendance;
 use App\Livewire\Auth\Login;
 use App\Livewire\Dashboard;
+use App\Livewire\ManageClass;
+use App\Livewire\ManageSubject;
 use App\Livewire\ManageUser;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
@@ -30,6 +32,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/attendance', Attendance::class)->name('attendance');
     Route::get('/teacher-attendance', TeacherAttendance::class)->name('teacher-attendance');
     Route::get('/manage-user', ManageUser::class)->name('manage-user');
+    Route::get('/manage-subject', ManageSubject::class)->name('manage-subject');
+    Route::get('/manage-class', ManageClass::class)->name('manage-class');
 
     Route::redirect('settings', 'settings/profile');
 
