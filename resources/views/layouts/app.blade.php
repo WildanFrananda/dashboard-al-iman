@@ -46,16 +46,31 @@
             <!-- RIGHT: PROFILE -->
             <div class="flex items-center gap-4">
                  @auth
-                 <div class="hidden sm:block text-right">
-                    <p class="text-sm font-bold text-gray-900 leading-tight">{{ auth()->user()->name }}</p>
-                    <p class="text-xs text-gray-500 font-medium capitalize">{{ auth()->user()->role }}</p>
-                 </div>
-                 <div class="relative">
-                    <div class="h-10 w-10 md:h-11 md:w-11 rounded-full border-2 border-white shadow-sm bg-[#0F609B] text-white flex items-center justify-center font-bold text-sm">
-                        {{ auth()->user()->initials() }}
-                    </div>
-                    <span class="absolute bottom-0 right-0 block h-3 w-3 rounded-full ring-2 ring-white bg-green-400"></span>
-                 </div>
+                 <flux:dropdown position="bottom-end" align="end">
+                     <!-- Dropdown Trigger -->
+                     <button type="button" class="flex items-center gap-4 text-left hover:opacity-80 transition-opacity focus:outline-none">
+                         <div class="hidden sm:block text-right">
+                            <p class="text-sm font-bold text-gray-900 leading-tight">{{ auth()->user()->name }}</p>
+                            <p class="text-xs text-gray-500 font-medium capitalize">{{ auth()->user()->role }}</p>
+                         </div>
+                         <div class="relative">
+                            <div class="h-10 w-10 md:h-11 md:w-11 rounded-full border-2 border-white shadow-sm bg-[#0F609B] text-white flex items-center justify-center font-bold text-sm">
+                                {{ auth()->user()->initials() }}
+                            </div>
+                            <span class="absolute bottom-0 right-0 block h-3 w-3 rounded-full ring-2 ring-white bg-green-400"></span>
+                         </div>
+                     </button>
+
+                     <!-- Dropdown Menu -->
+                     <flux:menu class="w-48">
+                         <form method="POST" action="{{ route('logout') }}" class="w-full">
+                             @csrf
+                             <flux:menu.item icon="arrow-right-start-on-rectangle" as="button" type="submit" class="w-full text-red-600 hover:bg-red-50 hover:text-red-700">
+                                 Log Out
+                             </flux:menu.item>
+                         </form>
+                     </flux:menu>
+                 </flux:dropdown>
                  @endauth
             </div>
         </header>
