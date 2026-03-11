@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "074ed3c87294b51bac6a2f6aa61be862",
+    "content-hash": "d5f2f36da79c2425a8e28e2e54e5418b",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -7680,16 +7680,16 @@
         },
         {
             "name": "laravel/pint",
-            "version": "v1.26.0",
+            "version": "v1.28.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/pint.git",
-                "reference": "69dcca060ecb15e4b564af63d1f642c81a241d6f"
+                "reference": "1feae84bf9c1649d99ba8f7b8193bf0f09f04cc9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/pint/zipball/69dcca060ecb15e4b564af63d1f642c81a241d6f",
-                "reference": "69dcca060ecb15e4b564af63d1f642c81a241d6f",
+                "url": "https://api.github.com/repos/laravel/pint/zipball/1feae84bf9c1649d99ba8f7b8193bf0f09f04cc9",
+                "reference": "1feae84bf9c1649d99ba8f7b8193bf0f09f04cc9",
                 "shasum": ""
             },
             "require": {
@@ -7700,13 +7700,14 @@
                 "php": "^8.2.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.90.0",
-                "illuminate/view": "^12.40.1",
-                "larastan/larastan": "^3.8.0",
-                "laravel-zero/framework": "^12.0.4",
+                "friendsofphp/php-cs-fixer": "^3.94.2",
+                "illuminate/view": "^12.54.1",
+                "larastan/larastan": "^3.9.3",
+                "laravel-zero/framework": "^12.0.5",
                 "mockery/mockery": "^1.6.12",
-                "nunomaduro/termwind": "^2.3.3",
-                "pestphp/pest": "^3.8.4"
+                "nunomaduro/termwind": "^2.4.0",
+                "pestphp/pest": "^3.8.5",
+                "shipfastlabs/agent-detector": "^1.0.2"
             },
             "bin": [
                 "builds/pint"
@@ -7743,7 +7744,7 @@
                 "issues": "https://github.com/laravel/pint/issues",
                 "source": "https://github.com/laravel/pint"
             },
-            "time": "2025-11-25T21:15:52+00:00"
+            "time": "2026-03-10T20:37:18+00:00"
         },
         {
             "name": "laravel/sail",

@@ -1,5 +1,8 @@
 <?php
 
+declare(strict_types = 1)
+;
+
 use App\Livewire\Attendance;
 use App\Livewire\Auth\Login;
 use App\Livewire\Dashboard;
@@ -9,6 +12,7 @@ use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
+use App\Livewire\TeacherAttendance;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -23,6 +27,7 @@ Route::get('/login', Login::class)->name('login');
 
 Route::get('/dashboard', Dashboard::class)->name('dashboard');
 Route::get('/attendance', Attendance::class)->name('attendance');
+Route::get('/teacher-attendance', TeacherAttendance::class)->name('teacher-attendance');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
@@ -33,13 +38,13 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('settings/two-factor', TwoFactor::class)
         ->middleware(
-            when(
-                Features::canManageTwoFactorAuthentication()
-                    && Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword'),
-                ['password.confirm'],
-                [],
-            ),
-        )
+        when(
+        Features::canManageTwoFactorAuthentication()
+        && Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword'),
+    ['password.confirm'],
+    [],
+    ),
+    )
         ->name('two-factor.show');
 });
 

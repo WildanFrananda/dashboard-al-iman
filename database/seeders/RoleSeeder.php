@@ -1,21 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
-use App\Models\User;
 use App\Models\ProfilGuru;
 use App\Models\ProfilMurid;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
-class RoleSeeder extends Seeder
-{
+class RoleSeeder extends Seeder {
     /**
      * Run the database seeds.
      */
-    public function run(): void
-    {
+    public function run(): void {
         // 1. Create Admin
         User::create([
             'name' => 'Administrator',
@@ -51,7 +50,7 @@ class RoleSeeder extends Seeder
             'nis' => '20230001',
             'nama_lengkap' => 'Chika Karena',
         ]);
-        
+
         $muridUser2 = User::create([
             'name' => 'Siti Aisyah',
             'email' => 'murid2@email.com',

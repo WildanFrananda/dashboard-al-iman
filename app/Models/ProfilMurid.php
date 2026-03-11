@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProfilMurid extends Model
-{
+class ProfilMurid extends Model {
     use HasFactory;
 
     protected $table = 'profil_murid';
@@ -17,13 +18,11 @@ class ProfilMurid extends Model
         'nama_lengkap',
     ];
 
-    public function user()
-    {
+    public function user() {
         return $this->belongsTo(User::class);
     }
 
-    public function absensis()
-    {
+    public function absensis() {
         return $this->hasMany(Absensi::class, 'murid_id');
     }
 }

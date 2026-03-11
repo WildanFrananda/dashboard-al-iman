@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MataPelajaran extends Model
-{
+class MataPelajaran extends Model {
     use HasFactory;
 
     protected $table = 'mata_pelajaran';
@@ -16,8 +17,7 @@ class MataPelajaran extends Model
         'nama_mapel',
     ];
 
-    public function jadwalMengajars()
-    {
+    public function jadwalMengajars() {
         return $this->hasMany(JadwalMengajar::class);
     }
 }

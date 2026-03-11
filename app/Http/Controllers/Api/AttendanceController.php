@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -8,16 +10,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class AttendanceController extends Controller
-{
+class AttendanceController extends Controller {
     /**
      * Get attendance summary for the logged-in student.
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
-    public function studentDashboard(Request $request): JsonResponse
-    {
+    public function studentDashboard(Request $request): JsonResponse {
         // 1. Identify the logged-in student via the user -> profil_murid relationship.
         $user = Auth::user();
 
@@ -25,7 +22,7 @@ class AttendanceController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized access or user is not a student.',
-                'data' => null
+                'data' => null,
             ], 403);
         }
 
@@ -35,7 +32,7 @@ class AttendanceController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Student profile not found.',
-                'data' => null
+                'data' => null,
             ], 404);
         }
 
@@ -83,9 +80,9 @@ class AttendanceController extends Controller
         foreach ($groupedData as $data) {
             $totalKehadiran = $data['hadir'];
             $totalPertemuan = $data['total_pertemuan'];
-            
-            $persentase = $totalPertemuan > 0 
-                ? round(($totalKehadiran / $totalPertemuan) * 100, 2) 
+
+            $persentase = $totalPertemuan > 0
+                ? round(($totalKehadiran / $totalPertemuan) * 100, 2)
                 : 0;
 
             $data['persentase_kehadiran'] = $persentase;
@@ -99,8 +96,8 @@ class AttendanceController extends Controller
             'data' => [
                 'student_name' => $studentProfile->nama_lengkap,
                 'nis' => $studentProfile->nis,
-                'attendance_summary' => $result
-            ]
+                'attendance_summary' => $result,
+            ],
         ], 200);
     }
 }

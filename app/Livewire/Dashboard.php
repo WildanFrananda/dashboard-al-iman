@@ -1,22 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire;
 
-use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
+use Livewire\Component;
 
 #[Layout('layouts.app')]
 #[Title('Dashboard - SIAKMAN')]
-class Dashboard extends Component
-{
+class Dashboard extends Component {
     // Dummy Data Properties
     public $stats = [];
+
     public $schedule = [];
+
     public $attendanceData = [];
 
-    public function mount()
-    {
+    public function mount() {
         // 1. Data Statistik (Card Atas)
         $this->stats = [
             [
@@ -63,34 +65,33 @@ class Dashboard extends Component
                 'lessons' => [
                     ['subject' => 'Bahasa Indonesia', 'teacher' => 'Rina Nurdiana, S.Pd', 'time' => '10:00 - 10:30'],
                     ['subject' => 'Matematika', 'teacher' => 'Rina Nurdiana, S.Pd', 'time' => '10:30 - 11:00'],
-                ]
+                ],
             ],
             [
                 'day' => 'Senin', // Duplikasi sesuai gambar untuk efek scroll/grid
                 'lessons' => [
                     ['subject' => 'Bahasa Indonesia', 'teacher' => 'Rina Nurdiana, S.Pd', 'time' => '10:00 - 10:30'],
                     ['subject' => 'Matematika', 'teacher' => 'Rina Nurdiana, S.Pd', 'time' => '10:30 - 11:00'],
-                ]
+                ],
             ],
             [
                 'day' => 'Senin',
                 'lessons' => [
                     ['subject' => 'Bahasa Indonesia', 'teacher' => 'Rina Nurdiana, S.Pd', 'time' => '10:00 - 10:30'],
                     ['subject' => 'Matematika', 'teacher' => 'Rina Nurdiana, S.Pd', 'time' => '10:30 - 11:00'],
-                ]
+                ],
             ],
             [
                 'day' => 'Senin',
                 'lessons' => [
                     ['subject' => 'Bahasa Indonesia', 'teacher' => 'Rina Nurdiana, S.Pd', 'time' => '10:00 - 10:30'],
                     ['subject' => 'Matematika', 'teacher' => 'Rina Nurdiana, S.Pd', 'time' => '10:30 - 11:00'],
-                ]
+                ],
             ],
         ];
     }
 
-    public function render()
-    {
+    public function render() {
         return view('livewire.dashboard');
     }
 }

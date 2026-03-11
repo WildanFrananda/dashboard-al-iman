@@ -1,19 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
 
-class AuthController extends Controller
-{
+class AuthController extends Controller {
     /**
      * Handle an authentication attempt.
      */
-    public function login(Request $request)
-    {
+    public function login(Request $request) {
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
@@ -42,32 +41,31 @@ class AuthController extends Controller
                         'name' => $user->name,
                         'email' => $user->email,
                         'role' => $user->role,
-                        'profile' => $profile
+                        'profile' => $profile,
                     ],
                     'token' => $token,
-                ]
+                ],
             ]);
         }
 
         return response()->json([
             'success' => false,
             'message' => 'Invalid email or password.',
-            'data' => null
+            'data' => null,
         ], 401);
     }
 
     /**
      * Handle logout.
      */
-    public function logout(Request $request)
-    {
+    public function logout(Request $request) {
         // Revoke the token that was used to authenticate the current request
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
             'success' => true,
             'message' => 'Logout successful.',
-            'data' => null
+            'data' => null,
         ]);
     }
 }

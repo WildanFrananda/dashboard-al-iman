@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Settings;
 
 use Exception;
@@ -13,8 +15,7 @@ use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Symfony\Component\HttpFoundation\Response;
 
-class TwoFactor extends Component
-{
+class TwoFactor extends Component {
     #[Locked]
     public bool $twoFactorEnabled;
 
@@ -37,8 +38,7 @@ class TwoFactor extends Component
     /**
      * Mount the component.
      */
-    public function mount(DisableTwoFactorAuthentication $disableTwoFactorAuthentication): void
-    {
+    public function mount(DisableTwoFactorAuthentication $disableTwoFactorAuthentication): void {
         abort_unless(Features::enabled(Features::twoFactorAuthentication()), Response::HTTP_FORBIDDEN);
 
         if (Fortify::confirmsTwoFactorAuthentication() && is_null(auth()->user()->two_factor_confirmed_at)) {
@@ -52,11 +52,10 @@ class TwoFactor extends Component
     /**
      * Enable two-factor authentication for the user.
      */
-    public function enable(EnableTwoFactorAuthentication $enableTwoFactorAuthentication): void
-    {
+    public function enable(EnableTwoFactorAuthentication $enableTwoFactorAuthentication): void {
         $enableTwoFactorAuthentication(auth()->user());
 
-        if (! $this->requiresConfirmation) {
+        if (!$this->requiresConfirmation) {
             $this->twoFactorEnabled = auth()->user()->hasEnabledTwoFactorAuthentication();
         }
 
@@ -68,8 +67,7 @@ class TwoFactor extends Component
     /**
      * Load the two-factor authentication setup data for the user.
      */
-    private function loadSetupData(): void
-    {
+    private function loadSetupData(): void {
         $user = auth()->user();
 
         try {
@@ -85,8 +83,7 @@ class TwoFactor extends Component
     /**
      * Show the two-factor verification step if necessary.
      */
-    public function showVerificationIfNecessary(): void
-    {
+    public function showVerificationIfNecessary(): void {
         if ($this->requiresConfirmation) {
             $this->showVerificationStep = true;
 
@@ -101,8 +98,7 @@ class TwoFactor extends Component
     /**
      * Confirm two-factor authentication for the user.
      */
-    public function confirmTwoFactor(ConfirmTwoFactorAuthentication $confirmTwoFactorAuthentication): void
-    {
+    public function confirmTwoFactor(ConfirmTwoFactorAuthentication $confirmTwoFactorAuthentication): void {
         $this->validate();
 
         $confirmTwoFactorAuthentication(auth()->user(), $this->code);
@@ -115,8 +111,7 @@ class TwoFactor extends Component
     /**
      * Reset two-factor verification state.
      */
-    public function resetVerification(): void
-    {
+    public function resetVerification(): void {
         $this->reset('code', 'showVerificationStep');
 
         $this->resetErrorBag();
@@ -125,8 +120,7 @@ class TwoFactor extends Component
     /**
      * Disable two-factor authentication for the user.
      */
-    public function disable(DisableTwoFactorAuthentication $disableTwoFactorAuthentication): void
-    {
+    public function disable(DisableTwoFactorAuthentication $disableTwoFactorAuthentication): void {
         $disableTwoFactorAuthentication(auth()->user());
 
         $this->twoFactorEnabled = false;
@@ -135,8 +129,7 @@ class TwoFactor extends Component
     /**
      * Close the two-factor authentication modal.
      */
-    public function closeModal(): void
-    {
+    public function closeModal(): void {
         $this->reset(
             'code',
             'manualSetupKey',
@@ -147,7 +140,7 @@ class TwoFactor extends Component
 
         $this->resetErrorBag();
 
-        if (! $this->requiresConfirmation) {
+        if (!$this->requiresConfirmation) {
             $this->twoFactorEnabled = auth()->user()->hasEnabledTwoFactorAuthentication();
         }
     }
@@ -155,8 +148,7 @@ class TwoFactor extends Component
     /**
      * Get the current modal configuration state.
      */
-    public function getModalConfigProperty(): array
-    {
+    public function getModalConfigProperty(): array {
         if ($this->twoFactorEnabled) {
             return [
                 'title' => __('Two-Factor Authentication Enabled'),

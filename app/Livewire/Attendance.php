@@ -1,20 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire;
 
-use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
+use Livewire\Component;
 
 #[Layout('layouts.app')]
 #[Title('Absensi - SIAKMAN')]
-class Attendance extends Component
-{
+class Attendance extends Component {
     public $summary = [];
+
     public $attendanceRecords = [];
 
-    public function mount()
-    {
+    public function mount() {
         // 1. Data Ringkasan (Kartu Atas)
         $this->summary = [
             'hadir' => 10,
@@ -36,7 +37,7 @@ class Attendance extends Component
                     ['meet' => 5, 'status' => 'A'], // Merah
                     ['meet' => 6, 'status' => 'H'],
                     ['meet' => 7, 'status' => 'H'],
-                ]
+                ],
             ],
             [
                 'subject' => 'Matematika',
@@ -48,7 +49,7 @@ class Attendance extends Component
                     ['meet' => 5, 'status' => 'I'], // Biru
                     ['meet' => 6, 'status' => 'H'],
                     ['meet' => 7, 'status' => 'H'],
-                ]
+                ],
             ],
             [
                 'subject' => 'Bahasa Sunda',
@@ -60,7 +61,7 @@ class Attendance extends Component
                     ['meet' => 5, 'status' => 'A'],
                     ['meet' => 6, 'status' => 'H'],
                     ['meet' => 7, 'status' => 'H'],
-                ]
+                ],
             ],
             [
                 'subject' => 'PJOK',
@@ -72,9 +73,9 @@ class Attendance extends Component
                     ['meet' => 5, 'status' => 'A'],
                     ['meet' => 6, 'status' => 'H'],
                     ['meet' => 7, 'status' => 'H'],
-                ]
+                ],
             ],
-             [
+            [
                 'subject' => 'Pendidikan Kewarnegaraan',
                 'history' => [
                     ['meet' => 1, 'status' => 'H'],
@@ -84,13 +85,12 @@ class Attendance extends Component
                     ['meet' => 5, 'status' => 'S'], // Kuning
                     ['meet' => 6, 'status' => 'H'],
                     ['meet' => 7, 'status' => 'H'],
-                ]
+                ],
             ],
         ];
     }
 
-    public function render()
-    {
+    public function render() {
         return view('livewire.attendance');
     }
 }

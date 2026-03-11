@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Settings;
 
 use App\Models\User;
@@ -8,8 +10,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 
-class Profile extends Component
-{
+class Profile extends Component {
     public string $name = '';
 
     public string $email = '';
@@ -17,8 +18,7 @@ class Profile extends Component
     /**
      * Mount the component.
      */
-    public function mount(): void
-    {
+    public function mount(): void {
         $this->name = Auth::user()->name;
         $this->email = Auth::user()->email;
     }
@@ -26,8 +26,7 @@ class Profile extends Component
     /**
      * Update the profile information for the currently authenticated user.
      */
-    public function updateProfileInformation(): void
-    {
+    public function updateProfileInformation(): void {
         $user = Auth::user();
 
         $validated = $this->validate([
@@ -57,8 +56,7 @@ class Profile extends Component
     /**
      * Send an email verification notification to the current user.
      */
-    public function resendVerificationNotification(): void
-    {
+    public function resendVerificationNotification(): void {
         $user = Auth::user();
 
         if ($user->hasVerifiedEmail()) {

@@ -58,12 +58,12 @@
         </header>
 
         <!-- 2. CONTENT WRAPPER (Sidebar + Main) -->
-        <div class="flex flex-col lg:flex-row gap-6 items-start flex-1">
+        <div class="flex flex-col lg:flex-row gap-6 items-stretch flex-1">
             
             <!-- SIDEBAR DESKTOP -->
             <aside class="hidden lg:block w-[280px] flex-shrink-0">
-                <div class="bg-white rounded-[20px] shadow-sm p-6 min-h-[600px]">
-                    <nav class="space-y-4">
+                <div class="bg-white rounded-[20px] shadow-sm p-6 h-full">
+                    <nav class="space-y-2 lg:space-y-4">
                         @include('layouts.partials.sidebar-nav')
                     </nav>
                 </div>

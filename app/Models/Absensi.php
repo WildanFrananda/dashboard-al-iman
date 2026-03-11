@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Absensi extends Model
-{
+class Absensi extends Model {
     use HasFactory;
 
     protected $table = 'absensi';
@@ -18,13 +19,11 @@ class Absensi extends Model
         'waktu_absen',
     ];
 
-    public function pertemuanKelas()
-    {
+    public function pertemuanKelas() {
         return $this->belongsTo(PertemuanKelas::class);
     }
 
-    public function murid()
-    {
+    public function murid() {
         return $this->belongsTo(ProfilMurid::class, 'murid_id');
     }
 }

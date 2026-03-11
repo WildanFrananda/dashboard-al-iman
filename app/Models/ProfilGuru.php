@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProfilGuru extends Model
-{
+class ProfilGuru extends Model {
     use HasFactory;
 
     protected $table = 'profil_guru';
@@ -17,13 +18,11 @@ class ProfilGuru extends Model
         'nama_lengkap',
     ];
 
-    public function user()
-    {
+    public function user() {
         return $this->belongsTo(User::class);
     }
 
-    public function jadwalMengajars()
-    {
+    public function jadwalMengajars() {
         return $this->hasMany(JadwalMengajar::class, 'guru_id');
     }
 }

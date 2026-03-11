@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -8,8 +10,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
-class User extends Authenticatable
-{
+class User extends Authenticatable {
     use HasFactory, Notifiable, TwoFactorAuthenticatable;
 
     protected $fillable = [
@@ -26,16 +27,14 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected function casts(): array
-    {
+    protected function casts(): array {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
 
-    public function initials(): string
-    {
+    public function initials(): string {
         return Str::of($this->name)
             ->explode(' ')
             ->take(2)
@@ -43,13 +42,11 @@ class User extends Authenticatable
             ->implode('');
     }
 
-    public function profilMurid()
-    {
+    public function profilMurid() {
         return $this->hasOne(ProfilMurid::class, 'user_id');
     }
 
-    public function profilGuru()
-    {
+    public function profilGuru() {
         return $this->hasOne(ProfilGuru::class, 'user_id');
     }
 }
