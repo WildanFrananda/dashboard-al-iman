@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 use App\Livewire\TeacherAttendance;
 
+use App\Livewire\ManageUser;
+
 Route::get('/', function () {
     return redirect()->route('login');
 })->name('home');
@@ -28,6 +30,7 @@ Route::get('/login', Login::class)->name('login');
 Route::get('/dashboard', Dashboard::class)->name('dashboard');
 Route::get('/attendance', Attendance::class)->name('attendance');
 Route::get('/teacher-attendance', TeacherAttendance::class)->name('teacher-attendance');
+Route::get('/manage-user', ManageUser::class)->name('manage-user');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
