@@ -26,8 +26,11 @@
 </ul>
 
 <ul>
+    @php
+        $absensiRoute = auth()->check() && auth()->user()->role === 'guru' ? route('teacher-attendance') : route('attendance');
+    @endphp
     <!-- Absensi Link -->
-    <a href="{{ route('teacher-attendance') }}" 
+    <a href="{{ $absensiRoute }}" 
        class="group flex gap-x-4 rounded-lg px-4 py-3 text-sm font-semibold leading-6 transition-all duration-200
        {{ request()->routeIs('attendance') || request()->routeIs('teacher-attendance')
           ? 'bg-[#0F609B] text-white shadow-md shadow-blue-900/10' 
