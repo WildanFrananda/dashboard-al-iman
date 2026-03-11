@@ -45,16 +45,18 @@
 
             <!-- RIGHT: PROFILE -->
             <div class="flex items-center gap-4">
+                 @auth
                  <div class="hidden sm:block text-right">
-                    <p class="text-sm font-bold text-gray-900 leading-tight">Alila Nafisah</p>
-                    <p class="text-xs text-gray-500 font-medium">Murid</p>
+                    <p class="text-sm font-bold text-gray-900 leading-tight">{{ auth()->user()->name }}</p>
+                    <p class="text-xs text-gray-500 font-medium capitalize">{{ auth()->user()->role }}</p>
                  </div>
                  <div class="relative">
-                    <img class="h-10 w-10 md:h-11 md:w-11 rounded-full border-2 border-white shadow-sm object-cover bg-blue-500" 
-                         src="https://placehold.co/100x100/3b82f6/white?text=AN" 
-                         alt="Profile">
+                    <div class="h-10 w-10 md:h-11 md:w-11 rounded-full border-2 border-white shadow-sm bg-[#0F609B] text-white flex items-center justify-center font-bold text-sm">
+                        {{ auth()->user()->initials() }}
+                    </div>
                     <span class="absolute bottom-0 right-0 block h-3 w-3 rounded-full ring-2 ring-white bg-green-400"></span>
                  </div>
+                 @endauth
             </div>
         </header>
 
