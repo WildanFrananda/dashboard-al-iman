@@ -13,13 +13,13 @@ class PertemuanKelas extends Model {
     protected $table = 'pertemuan_kelas';
 
     protected $fillable = [
-        'jadwal_mengajar_id',
+        'teaching_schedule_id',
         'tanggal_pertemuan',
         'materi',
     ];
 
-    public function jadwalMengajar() {
-        return $this->belongsTo(JadwalMengajar::class);
+    public function teachingSchedule() {
+        return $this->belongsTo(TeachingSchedule::class);
     }
 
     public function absensis() {

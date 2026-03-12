@@ -22,7 +22,7 @@ class ProfilGuru extends Model {
         return $this->belongsTo(User::class);
     }
 
-    public function jadwalMengajars() {
-        return $this->hasMany(JadwalMengajar::class, 'guru_id');
+    public function teachingSchedules() {
+        return $this->hasMany(TeachingSchedule::class, 'guru_id');
     }
 }

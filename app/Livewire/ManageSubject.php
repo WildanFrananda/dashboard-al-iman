@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
-use App\Models\MataPelajaran;
+use App\Models\Subject;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -28,19 +28,19 @@ class ManageSubject extends Component {
     }
 
     public function render() {
-        $query = MataPelajaran::query();
+        $query = Subject::query();
 
         if ($this->search !== '') {
             $query->where(function ($q) {
-                $q->where('nama_mapel', 'like', '%'.$this->search.'%')
-                    ->orWhere('kode_mapel', 'like', '%'.$this->search.'%');
+                $q->where('subject_name', 'like', '%'.$this->search.'%')
+                    ->orWhere('subject_code', 'like', '%'.$this->search.'%');
             });
         }
 
-        $pelajarans = $query->latest()->paginate(10);
+        $subjects = $query->latest()->paginate(10);
 
         return view('livewire.manage-subject', [
-            'pelajarans' => $pelajarans,
+            'subjects' => $subjects,
         ]);
     }
 }

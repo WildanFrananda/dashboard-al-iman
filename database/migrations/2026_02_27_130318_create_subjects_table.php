@@ -8,15 +8,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('mata_pelajaran', function (Blueprint $table) {
+        Schema::create('subjects', function (Blueprint $table) {
             $table->id();
-            $table->string('kode_mapel')->unique();
-            $table->string('nama_mapel');
+            $table->string('subject_name');
+            $table->string('subject_code')->unique();
+            $table->enum('category', ['Wajib', 'Muatan Lokal', 'Ekstrakurikuler']);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
 
     public function down(): void {
-        Schema::dropIfExists('mata_pelajaran');
+        Schema::dropIfExists('subjects');
     }
 };

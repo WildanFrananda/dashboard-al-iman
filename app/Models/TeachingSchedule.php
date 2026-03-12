@@ -7,22 +7,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class JadwalMengajar extends Model {
+class TeachingSchedule extends Model {
     use HasFactory;
 
-    protected $table = 'jadwal_mengajar';
+    protected $table = 'teaching_schedules';
 
     protected $fillable = [
         'guru_id',
-        'mata_pelajaran_id',
+        'subject_id',
     ];
 
     public function guru() {
         return $this->belongsTo(ProfilGuru::class, 'guru_id');
     }
 
-    public function mataPelajaran() {
-        return $this->belongsTo(MataPelajaran::class);
+    public function subject() {
+        return $this->belongsTo(Subject::class);
     }
 
     public function pertemuanKelas() {

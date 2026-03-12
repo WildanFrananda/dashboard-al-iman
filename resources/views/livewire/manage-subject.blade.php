@@ -13,18 +13,28 @@
         </div>
 
         <!-- Add Button -->
-        <flux:button variant="primary" icon="plus" class="w-full md:w-auto !bg-[#F28B2B] hover:!bg-[#D97706] !text-white !border-0">
+        <flux:button variant="primary" icon="plus" href="{{ route('create-subject') }}" wire:navigate class="w-full md:w-auto !bg-[#F28B2B] hover:!bg-[#D97706] !text-white !border-0 flex-shrink-0">
             Tambah Pelajaran
         </flux:button>
     </div>
 
     <!-- MAIN CONTENT AREA (TABLE) -->
-    <div class="relative bg-white rounded-[20px] shadow-sm flex-1 border border-gray-100 flex flex-col overflow-hidden min-h-[400px]">
+    <div class="flex-1 flex flex-col gap-4">
+        @if(session('success'))
+            <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-[12px] flex items-center gap-3">
+                <flux:icon.check-circle class="w-5 h-5" />
+                <span class="text-sm font-medium">{{ session('success') }}</span>
+            </div>
+        @endif
+
+        <div class="relative bg-white rounded-[20px] shadow-sm flex-1 border border-gray-100 flex flex-col overflow-hidden min-h-[400px]">
         
         <!-- Table Header -->
         <div class="bg-[#F1F5F9] px-6 py-4 flex justify-between items-center shrink-0 border-b border-gray-100">
             <div class="font-bold text-gray-800 text-sm w-[150px] hidden sm:block">Kode Mapel</div>
             <div class="font-bold text-gray-800 text-sm flex-1">Nama Pelajaran</div>
+            <div class="font-bold text-gray-800 text-sm w-[150px] hidden lg:block">Kategori</div>
+            <div class="font-bold text-gray-800 text-sm w-[100px] hidden sm:block text-center">Status</div>
             <div class="font-bold text-gray-800 text-sm w-full sm:w-[100px] text-right sm:text-center mt-2 sm:mt-0">Aksi</div>
         </div>
 
@@ -43,6 +53,12 @@
                         <flux:skeleton class="w-1/2 sm:w-[250px]" />
                     </div>
                     <!-- Actions Skeleton -->
+                    <div class="w-[150px] hidden lg:block">
+                        <flux:skeleton class="w-24 h-5" />
+                    </div>
+                    <div class="w-[100px] hidden sm:block flex justify-center">
+                        <flux:skeleton class="w-16 h-6 rounded-md" />
+                    </div>
                     <div class="w-full sm:w-[100px] flex items-center justify-end sm:justify-center gap-2">
                         <flux:skeleton class="w-8 h-8 rounded-md" />
                         <flux:skeleton class="w-8 h-8 rounded-md" />
@@ -54,12 +70,12 @@
 
         <!-- Table Body -->
         <div wire:loading.class="hidden" class="divide-y divide-dashed divide-gray-200 flex-1 overflow-y-auto w-full">
-            @forelse($pelajarans as $pelajaran)
-            <div wire:key="pelajaran-{{ $pelajaran->id }}" class="px-6 py-4 flex flex-col sm:flex-row sm:justify-between sm:items-center hover:bg-gray-50/50 transition-colors gap-3 sm:gap-0">
+            @forelse($subjects as $item)
+            <div wire:key="subject-{{ $item->id }}" class="px-6 py-4 flex flex-col sm:flex-row sm:justify-between sm:items-center hover:bg-gray-50/50 transition-colors gap-3 sm:gap-0">
                 
                 <!-- Kode Mapel Desktop -->
                 <div class="text-gray-500 font-mono text-sm w-full sm:w-[150px] hidden sm:block">
-                    {{ $pelajaran->kode_mapel }}
+                    {{ $item->subject_code }}
                 </div>
 
                 <!-- Nama Pelajaran -->
@@ -69,13 +85,27 @@
                              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
                         </svg>
                     </div>
-                    <span>{{ $pelajaran->nama_mapel }}</span>
+                    <span>{{ $item->subject_name }}</span>
                     <!-- Mobile Kode Mapel -->
-                    <div class="sm:hidden ml-auto">
+                    <div class="sm:hidden ml-auto flex gap-2 items-center">
                         <span class="text-xs px-2.5 py-1 rounded-sm font-mono bg-gray-100 text-gray-700">
-                            {{ $pelajaran->kode_mapel }}
+                            {{ $item->subject_code }}
                         </span>
                     </div>
+                </div>
+
+                <!-- Category -->
+                <div class="text-gray-600 text-sm w-[150px] hidden lg:block">
+                    {{ $item->category }}
+                </div>
+
+                <!-- Status -->
+                <div class="w-[100px] hidden sm:flex justify-center shrink-0">
+                    @if($item->is_active)
+                        <span class="px-2 py-1 rounded-md text-xs font-bold bg-green-100 text-green-700">Aktif</span>
+                    @else
+                        <span class="px-2 py-1 rounded-md text-xs font-bold bg-red-100 text-red-700">Nonaktif</span>
+                    @endif
                 </div>
 
                 <!-- Actions -->
@@ -96,12 +126,12 @@
         </div>
         
         <!-- Pagination -->
-        @if($pelajarans->hasPages())
+        @if($subjects->hasPages())
         <div class="p-4 border-t border-gray-100 shrink-0 bg-white rounded-b-[20px]">
-            {{ $pelajarans->links() }}
+            {{ $subjects->links() }}
         </div>
         @endif
 
     </div>
-
+</div>
 </div>

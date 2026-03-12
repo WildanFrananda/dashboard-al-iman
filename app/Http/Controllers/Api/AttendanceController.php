@@ -39,7 +39,7 @@ class AttendanceController extends Controller {
         // 2. Query the attendance data with relations
         // We load the attendance records along with the class meeting and schedule to get the subject.
         $attendances = $studentProfile->absensis()
-            ->with(['pertemuanKelas.jadwalMengajar.mataPelajaran'])
+            ->with(['pertemuanKelas.teachingSchedule.subject'])
             ->get();
 
         // 3. Group by mata_pelajaran
@@ -47,11 +47,11 @@ class AttendanceController extends Controller {
 
         foreach ($attendances as $attendance) {
             $pertemuan = $attendance->pertemuanKelas;
-            if (!$pertemuan || !$pertemuan->jadwalMengajar || !$pertemuan->jadwalMengajar->mataPelajaran) {
+            if (!$pertemuan || !$pertemuan->teachingSchedule || !$pertemuan->teachingSchedule->subject) {
                 continue;
             }
 
-            $mapel = $pertemuan->jadwalMengajar->mataPelajaran;
+            $mapel = $pertemuan->teachingSchedule->subject;
             $mapelId = $mapel->id;
 
             if (!isset($groupedData[$mapelId])) {

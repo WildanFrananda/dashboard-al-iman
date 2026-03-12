@@ -8,15 +8,15 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void {
-        Schema::create('jadwal_mengajar', function (Blueprint $table) {
+        Schema::create('teaching_schedules', function (Blueprint $table) {
             $table->id();
             $table->foreignId('guru_id')->constrained('profil_guru')->cascadeOnDelete();
-            $table->foreignId('mata_pelajaran_id')->constrained('mata_pelajaran')->cascadeOnDelete();
+            $table->foreignId('subject_id')->constrained('subjects')->cascadeOnDelete();
             $table->timestamps();
         });
     }
 
     public function down(): void {
-        Schema::dropIfExists('jadwal_mengajar');
+        Schema::dropIfExists('teaching_schedules');
     }
 };

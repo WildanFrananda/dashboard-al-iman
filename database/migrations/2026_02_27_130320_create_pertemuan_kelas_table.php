@@ -10,7 +10,7 @@ return new class extends Migration {
     public function up(): void {
         Schema::create('pertemuan_kelas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('jadwal_mengajar_id')->constrained('jadwal_mengajar')->cascadeOnDelete();
+            $table->foreignId('teaching_schedule_id')->constrained('teaching_schedules')->cascadeOnDelete();
             $table->date('tanggal_pertemuan');
             $table->string('materi')->nullable();
             $table->timestamps();
