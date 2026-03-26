@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Models\Kelas;
+use App\Models\ProfilGuru;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -16,47 +18,111 @@ class ManageClass extends Component {
 
     public $search = '';
 
+    // Form fields
+    public $kode_kelas = '';
+
+    public $nama_kelas = '';
+
+    public $tahun_ajaran = '';
+
+    public $wali_kelas_id = null;
+
+    // Edit state
+    public $editingId = null;
+
+    public $showForm = false;
+
+    public $confirmingDelete = null;
+
     public function mount() {
         if (auth()->check() && auth()->user()->role !== 'admin') {
             return redirect()->route('dashboard');
         }
+        $this->tahun_ajaran = date('Y').'/'.(date('Y') + 1);
     }
 
     public function updatedSearch() {
         $this->resetPage();
     }
 
-    public function render() {
-        // Since there is no Kelas model yet, this is dummy data representing typical school classes
-        $allClasses = collect([
-            (object) ['id' => 1, 'kode_kelas' => 'X-MIPA-1', 'nama_kelas' => '10 MIPA 1', 'wali_kelas' => 'Budi Santoso'],
-            (object) ['id' => 2, 'kode_kelas' => 'X-MIPA-2', 'nama_kelas' => '10 MIPA 2', 'wali_kelas' => 'Siti Aisyah'],
-            (object) ['id' => 3, 'kode_kelas' => 'X-IPS-1',  'nama_kelas' => '10 IPS 1',  'wali_kelas' => 'Agus Rahman'],
-            (object) ['id' => 4, 'kode_kelas' => 'X-IPS-2',  'nama_kelas' => '10 IPS 2',  'wali_kelas' => 'Diana Putri'],
-            (object) ['id' => 5, 'kode_kelas' => 'XI-MIPA-1', 'nama_kelas' => '11 MIPA 1', 'wali_kelas' => 'Bambang Pamungkas'],
-            (object) ['id' => 6, 'kode_kelas' => 'XI-IPS-1', 'nama_kelas' => '11 IPS 1', 'wali_kelas' => 'Rini Susanti'],
+    public function openForm() {
+        $this->resetForm();
+        $this->showForm = true;
+    }
+
+    public function closeForm() {
+        $this->showForm = false;
+        $this->resetForm();
+    }
+
+    public function resetForm() {
+        $this->kode_kelas = '';
+        $this->nama_kelas = '';
+        $this->tahun_ajaran = date('Y').'/'.(date('Y') + 1);
+        $this->wali_kelas_id = null;
+        $this->editingId = null;
+    }
+
+    public function save() {
+        $this->validate([
+            'kode_kelas' => 'required|string|max:20|unique:kelas,kode_kelas,'.$this->editingId,
+            'nama_kelas' => 'required|string|max:100',
+            'tahun_ajaran' => 'required|string|max:20',
+            'wali_kelas_id' => 'nullable|exists:profil_guru,id',
         ]);
 
-        $filteredClasses = $allClasses->filter(function ($item) {
-            if ($this->search === '') {
-                return true;
-            }
-            return stripos($item->kode_kelas, $this->search) !== false || 
-                   stripos($item->nama_kelas, $this->search) !== false ||
-                   stripos($item->wali_kelas, $this->search) !== false;
-        });
-
-        // Simulating pagination
-        $classes = new \Illuminate\Pagination\LengthAwarePaginator(
-            $filteredClasses->values(),
-            $filteredClasses->count(),
-            10,
-            1,
-            ['path' => route('manage-class')]
+        Kelas::updateOrCreate(
+            ['id' => $this->editingId],
+            [
+                'kode_kelas' => $this->kode_kelas,
+                'nama_kelas' => $this->nama_kelas,
+                'tahun_ajaran' => $this->tahun_ajaran,
+                'wali_kelas_id' => $this->wali_kelas_id ?: null,
+            ]
         );
+
+        session()->flash('message', $this->editingId ? 'Kelas berhasil diupdate.' : 'Kelas berhasil ditambahkan.');
+        $this->closeForm();
+    }
+
+    public function edit($id) {
+        $kelas = Kelas::findOrFail($id);
+        $this->editingId = $kelas->id;
+        $this->kode_kelas = $kelas->kode_kelas;
+        $this->nama_kelas = $kelas->nama_kelas;
+        $this->tahun_ajaran = $kelas->tahun_ajaran;
+        $this->wali_kelas_id = $kelas->wali_kelas_id;
+        $this->showForm = true;
+    }
+
+    public function confirmDelete($id) {
+        $this->confirmingDelete = $id;
+    }
+
+    public function delete($id) {
+        Kelas::findOrFail($id)->delete();
+        $this->confirmingDelete = null;
+        session()->flash('message', 'Kelas berhasil dihapus.');
+    }
+
+    public function render() {
+        $classes = Kelas::query()
+            ->with('waliKelas')
+            ->when($this->search, function ($query) {
+                $query->where('kode_kelas', 'ilike', "%{$this->search}%")
+                    ->orWhere('nama_kelas', 'ilike', "%{$this->search}%")
+                    ->orWhereHas('waliKelas', function ($q) {
+                        $q->where('nama_lengkap', 'ilike', "%{$this->search}%");
+                    });
+            })
+            ->orderBy('kode_kelas')
+            ->paginate(10);
+
+        $gurus = ProfilGuru::orderBy('nama_lengkap')->get();
 
         return view('livewire.manage-class', [
             'classes' => $classes,
+            'gurus' => $gurus,
         ]);
     }
 }

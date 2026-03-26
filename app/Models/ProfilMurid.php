@@ -25,4 +25,10 @@ class ProfilMurid extends Model {
     public function absensis() {
         return $this->hasMany(Absensi::class, 'murid_id');
     }
+
+    public function kelas() {
+        return $this->belongsToMany(Kelas::class, 'kelas_murid', 'murid_id', 'kelas_id')
+            ->withPivot('tahun_ajaran')
+            ->withTimestamps();
+    }
 }

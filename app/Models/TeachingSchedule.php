@@ -15,6 +15,15 @@ class TeachingSchedule extends Model {
     protected $fillable = [
         'guru_id',
         'subject_id',
+        'kelas_id',
+        'hari',
+        'jam_mulai',
+        'jam_selesai',
+    ];
+
+    protected $casts = [
+        'jam_mulai' => 'datetime:H:i',
+        'jam_selesai' => 'datetime:H:i',
     ];
 
     public function guru() {
@@ -23,6 +32,10 @@ class TeachingSchedule extends Model {
 
     public function subject() {
         return $this->belongsTo(Subject::class);
+    }
+
+    public function kelas() {
+        return $this->belongsTo(Kelas::class);
     }
 
     public function pertemuanKelas() {

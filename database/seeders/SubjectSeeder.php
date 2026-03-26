@@ -46,7 +46,7 @@ class SubjectSeeder extends Seeder {
             'category' => 'Ekstrakurikuler',
             'is_active' => true,
         ]);
-        
+
         Subject::create([
             'subject_code' => 'SIL-01',
             'subject_name' => 'Pencak Silat',
