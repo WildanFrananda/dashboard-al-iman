@@ -43,6 +43,8 @@ services:
       POSTGRES_DB: dashboard_al_iman
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: secret
+    ports:
+      - "5432:5432" 
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:

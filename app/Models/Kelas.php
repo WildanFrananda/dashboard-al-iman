@@ -17,6 +17,8 @@ class Kelas extends Model {
         'nama_kelas',
         'tahun_ajaran',
         'wali_kelas_id',
+        'level',
+        'kelompok',
     ];
 
     public function waliKelas() {

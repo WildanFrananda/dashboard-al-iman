@@ -16,6 +16,7 @@ class ProfilMurid extends Model {
         'user_id',
         'nis',
         'nama_lengkap',
+        'status',
     ];
 
     public function user() {

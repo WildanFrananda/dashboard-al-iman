@@ -67,6 +67,25 @@
     </ul>
 
     <ul>
+        <!-- Manage Student Link -->
+        <a href="{{ route('manage-student') }}" class="group flex gap-x-4 rounded-lg px-4 py-3 text-sm font-semibold leading-6 transition-all duration-200 hover:translate-x-1
+           {{ request()->routeIs('manage-student')
+            ? 'bg-[#0F609B] text-white shadow-md shadow-blue-900/10'
+            : 'text-gray-600 hover:bg-gray-50 hover:text-[#0F609B]' 
+           }}">
+            <!-- Icon Students -->
+            <svg class="h-5 w-5 shrink-0 {{ request()->routeIs('manage-student') ? 'text-white' : 'text-gray-400 group-hover:text-[#0F609B]' }}"
+                fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M4.26 10.147L12 14.64l7.74-4.493a3 3 0 011.13 1.897V19.5a2.25 2.25 0 01-2.25 2.25h-13.5A2.25 2.25 0 013 19.5v-7.46a3 3 0 011.26-1.893z" />
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M12 4.5l9 5.25-9 5.25-9-5.25 9-5.25z" />
+            </svg>
+            Manage Murid
+        </a>
+    </ul>
+
+    <ul>
         <!-- Manage Subject Link -->
         <a href="{{ route('manage-subject') }}" class="group flex gap-x-4 rounded-lg px-4 py-3 text-sm font-semibold leading-6 transition-all duration-200 hover:translate-x-1
            {{ request()->routeIs('manage-subject')

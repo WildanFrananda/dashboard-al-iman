@@ -6,6 +6,8 @@ namespace App\Livewire;
 
 use App\Models\Kelas;
 use App\Models\ProfilGuru;
+use App\Models\ProfilMurid;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -34,11 +36,20 @@ class ManageClass extends Component {
 
     public $confirmingDelete = null;
 
+    // Promotion State
+    public $showPromotionModal = false;
+    public $promotionStep = 1;
+    public $selectedStayBackIds = []; // IDs of ProfilMurid who will NOT be promoted
+    public $newAcademicYear = '';
+
     public function mount() {
         if (auth()->check() && auth()->user()->role !== 'admin') {
             return redirect()->route('dashboard');
         }
         $this->tahun_ajaran = date('Y').'/'.(date('Y') + 1);
+        
+        $currentYear = (int) date('Y');
+        $this->newAcademicYear = ($currentYear + 1).'/'.($currentYear + 2);
     }
 
     public function updatedSearch() {
@@ -105,6 +116,85 @@ class ManageClass extends Component {
         session()->flash('message', 'Kelas berhasil dihapus.');
     }
 
+    // PROMOTION METHODS
+    public function openPromotion() {
+        $this->promotionStep = 1;
+        $this->selectedStayBackIds = [];
+        $this->showPromotionModal = true;
+    }
+
+    public function startPromotion() {
+        // Step 1 -> 2: Show list of students to select who stays back
+        $this->promotionStep = 2;
+    }
+
+    public function processPromotion() {
+        $students = ProfilMurid::where('status', 'aktif')->get();
+        
+        DB::beginTransaction();
+        try {
+            foreach ($students as $student) {
+                // 1. Ambil Kelas saat ini (di tahun ajaran sumber)
+                $currentClass = $student->kelas()->wherePivot('tahun_ajaran', $this->tahun_ajaran)->first();
+                if (!$currentClass) continue;
+
+                // 2. Berpindah (Naik atau Tetap)?
+                $shouldStayBack = in_array((string)$student->id, $this->selectedStayBackIds);
+                
+                if ($shouldStayBack) {
+                    // Cari/Buat header kelas yang SAMA untuk TAHUN BARU
+                    $nextClass = Kelas::firstOrCreate(
+                        ['level' => $currentClass->level, 'kelompok' => $currentClass->kelompok, 'tahun_ajaran' => $this->newAcademicYear],
+                        [
+                            'nama_kelas' => $currentClass->nama_kelas,
+                            'kode_kelas' => $currentClass->kode_kelas . '-' . $this->newAcademicYear,
+                            'wali_kelas_id' => $currentClass->wali_kelas_id
+                        ]
+                    );
+                } else {
+                    // Cek Kelulusan (Level 6)
+                    if ($currentClass->level >= 6) {
+                        $student->update(['status' => 'lulus']);
+                        continue;
+                    }
+
+                    // Cari/Buat header kelas LEVEL BERIKUTNYA untuk TAHUN BARU
+                    $nextLevel = $currentClass->level + 1;
+                    $nextClass = Kelas::where('level', $nextLevel)
+                        ->where('kelompok', $currentClass->kelompok)
+                        ->where('tahun_ajaran', $this->newAcademicYear)
+                        ->first();
+
+                    if (!$nextClass) {
+                        // Cari template untuk nama/wali kelas dari record lama
+                        $template = Kelas::where('level', $nextLevel)->where('kelompok', $currentClass->kelompok)->first();
+                        $nextClass = Kelas::create([
+                            'level' => $nextLevel,
+                            'kelompok' => $currentClass->kelompok,
+                            'tahun_ajaran' => $this->newAcademicYear,
+                            'nama_kelas' => $template ? $template->nama_kelas : "Kelas {$nextLevel}{$currentClass->kelompok}",
+                            'kode_kelas' => "SD-{$nextLevel}{$currentClass->kelompok}-{$this->newAcademicYear}",
+                            'wali_kelas_id' => $template ? $template->wali_kelas_id : null,
+                        ]);
+                    }
+                }
+
+                // Attach ke kelas tujuan di tahun ajaran baru
+                // Menggunakan syncWithoutDetaching agar id murid & id kelas & tahun_ajaran unik di pivot
+                $student->kelas()->syncWithoutDetaching([
+                    $nextClass->id => ['tahun_ajaran' => $this->newAcademicYear]
+                ]);
+            }
+
+            DB::commit();
+            session()->flash('message', 'Proses kenaikan kelas berhasil untuk tahun ajaran ' . $this->newAcademicYear);
+            $this->showPromotionModal = false;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            session()->flash('error', 'Gagal memproses kenaikan: ' . $e->getMessage());
+        }
+    }
+
     public function render() {
         $classes = Kelas::query()
             ->with('waliKelas')
@@ -119,10 +209,12 @@ class ManageClass extends Component {
             ->paginate(10);
 
         $gurus = ProfilGuru::orderBy('nama_lengkap')->get();
+        $activeStudents = ProfilMurid::where('status', 'aktif')->orderBy('nama_lengkap')->get();
 
         return view('livewire.manage-class', [
             'classes' => $classes,
             'gurus' => $gurus,
+            'activeStudents' => $activeStudents,
         ]);
     }
 }
