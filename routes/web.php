@@ -7,6 +7,7 @@ use App\Livewire\Auth\Login;
 use App\Livewire\CreateSubject;
 use App\Livewire\Dashboard;
 use App\Livewire\ManageClass;
+use App\Livewire\ManageSchedule;
 use App\Livewire\ManageSubject;
 use App\Livewire\ManageUser;
 use App\Livewire\Settings\Appearance;
@@ -36,6 +37,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/manage-subject/create', CreateSubject::class)->name('create-subject');
     Route::get('/manage-subject', ManageSubject::class)->name('manage-subject');
     Route::get('/manage-class', ManageClass::class)->name('manage-class');
+    Route::get('/manage-schedule', ManageSchedule::class)->name('manage-schedule');
 
     Route::redirect('settings', 'settings/profile');
 
