@@ -55,4 +55,16 @@ class UserFactory extends Factory {
             'two_factor_confirmed_at' => null,
         ]);
     }
+
+    public function admin(): static {
+        return $this->state(fn (array $attributes) => ['role' => 'admin']);
+    }
+
+    public function guru(): static {
+        return $this->state(fn (array $attributes) => ['role' => 'guru']);
+    }
+
+    public function murid(): static {
+        return $this->state(fn (array $attributes) => ['role' => 'murid']);
+    }
 }
