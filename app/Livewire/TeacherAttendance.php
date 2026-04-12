@@ -104,7 +104,7 @@ class TeacherAttendance extends Component {
             'scheduleId'     => 'required|exists:teaching_schedules,id',
             'date'           => 'required|date_format:Y-m-d',
             'materi'         => 'nullable|string|max:500',
-            'attendances.*'  => 'required|in:Hadir,Izin,Sakit,Alfa',
+            'attendances.*'  => 'required|in:Hadir,Izin,Sakit,Alpa',
         ]);
 
         // Security: verifikasi kepemilikan jadwal
@@ -141,10 +141,7 @@ class TeacherAttendance extends Component {
 
         foreach ($this->students as $student) {
             $studentId  = $student['id'];
-            $statusInput = $this->attendances[$studentId] ?? 'Hadir';
-
-            // "Alfa" di UI → "Alpa" di DB
-            $dbStatus = $statusInput === 'Alfa' ? 'Alpa' : $statusInput;
+            $dbStatus = $this->attendances[$studentId] ?? 'Hadir';
 
             Absensi::updateOrCreate(
                 [

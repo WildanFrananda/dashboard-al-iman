@@ -31,7 +31,6 @@ class ManageSchedule extends Component {
     // Edit state
     public $editingId = null;
     public $showForm = false;
-    public $confirmingDelete = null;
 
     public $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 
@@ -103,13 +102,8 @@ class ManageSchedule extends Component {
         $this->showForm = true;
     }
 
-    public function confirmDelete($id) {
-        $this->confirmingDelete = $id;
-    }
-
-    public function delete($id) {
+    public function delete($id): void {
         TeachingSchedule::findOrFail($id)->delete();
-        $this->confirmingDelete = null;
         session()->flash('message', 'Jadwal berhasil dihapus.');
     }
 

@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Models\Absensi;
 use App\Models\AcademicEvent;
 use App\Models\Kelas;
+use App\Models\PertemuanKelas;
 use App\Models\ProfilGuru;
 use App\Models\ProfilMurid;
 use App\Models\SchoolSetting;
 use App\Models\TeachingSchedule;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -18,10 +21,11 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 #[Title('Dashboard - SIAKMAN')]
 class Dashboard extends Component {
-    public array  $stats      = [];
-    public array  $schedule   = [];   // guru & murid
-    public array  $kelasRecap = [];   // admin
-    public string $scheduleTitle = 'Jadwal Pembelajaran';
+    public array  $stats           = [];
+    public array  $schedule        = [];   // guru & murid
+    public array  $kelasRecap      = [];   // admin
+    public array  $weeklyAttendance = [];  // semua role
+    public string $scheduleTitle   = 'Jadwal Pembelajaran';
 
     public function mount(): void {
         $this->loadStats();
@@ -33,6 +37,8 @@ class Dashboard extends Component {
             'murid' => $this->loadMuridSchedule($user),
             default => $this->loadAdminKelasRecap(),
         };
+
+        $this->loadWeeklyAttendance($user);
     }
 
     // ── Stats (sama untuk semua role) ─────────────────────────────────────────
@@ -191,6 +197,74 @@ class Dashboard extends Component {
                 'jumlah_murid' => $k->murids()->wherePivot('tahun_ajaran', $tahunAjaran)->count(),
             ])
             ->toArray();
+    }
+
+    // ── Tingkat kehadiran mingguan (Senin–Jumat minggu ini) ───────────────────
+
+    private function loadWeeklyAttendance($user): void {
+        $monday = Carbon::now()->startOfWeek(Carbon::MONDAY);
+        $days   = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+
+        $this->weeklyAttendance = [];
+
+        for ($i = 0; $i < 5; $i++) {
+            $date = $monday->copy()->addDays($i)->toDateString();
+
+            // Ambil id pertemuan_kelas pada tanggal tersebut, filter by role
+            $pertemuanQuery = PertemuanKelas::whereDate('tanggal_pertemuan', $date);
+
+            if ($user?->role === 'guru') {
+                $guruId = $user->profilGuru?->id;
+                if ($guruId) {
+                    $pertemuanQuery->whereHas(
+                        'teachingSchedule',
+                        fn ($q) => $q->where('guru_id', $guruId)
+                    );
+                }
+            } elseif ($user?->role === 'murid') {
+                $profil = $user->profilMurid;
+                if ($profil) {
+                    // Cari kelas aktif murid
+                    $kelasId = $profil->kelas()->latest('kelas_murid.id')->first()?->id;
+                    if ($kelasId) {
+                        $pertemuanQuery->whereHas(
+                            'teachingSchedule',
+                            fn ($q) => $q->where('kelas_id', $kelasId)
+                        );
+                    }
+                }
+            }
+
+            $pertemuanIds = $pertemuanQuery->pluck('id');
+
+            if ($pertemuanIds->isEmpty()) {
+                $this->weeklyAttendance[] = [
+                    'day'        => $days[$i],
+                    'date'       => $date,
+                    'percentage' => null,   // tidak ada sesi = tidak ada data
+                    'hadir'      => 0,
+                    'total'      => 0,
+                ];
+                continue;
+            }
+
+            // Untuk murid: cek kehadiran pribadinya saja
+            $absensiQuery = Absensi::whereIn('pertemuan_kelas_id', $pertemuanIds);
+            if ($user?->role === 'murid' && ($muridId = $user->profilMurid?->id)) {
+                $absensiQuery->where('murid_id', $muridId);
+            }
+
+            $total = (clone $absensiQuery)->count();
+            $hadir = (clone $absensiQuery)->where('status_kehadiran', 'Hadir')->count();
+
+            $this->weeklyAttendance[] = [
+                'day'        => $days[$i],
+                'date'       => $date,
+                'percentage' => $total > 0 ? (int) round($hadir / $total * 100) : null,
+                'hadir'      => $hadir,
+                'total'      => $total,
+            ];
+        }
     }
 
     // ── Helper ────────────────────────────────────────────────────────────────

@@ -142,14 +142,14 @@
                             </div>
                         </label>
 
-                        {{-- ALFA --}}
+                        {{-- ALPA --}}
                         <label class="flex-1 cursor-pointer">
-                            <input type="radio" wire:model="attendances.{{ $student['id'] }}" value="Alfa"
+                            <input type="radio" wire:model="attendances.{{ $student['id'] }}" value="Alpa"
                                 name="absensi_{{ $student['id'] }}" class="hidden peer">
                             <div class="text-center py-1.5 px-3 rounded-md text-xs font-semibold border transition-all duration-150
                                         bg-white border-red-200 text-red-600 opacity-50 hover:opacity-80 hover:bg-red-50
                                         peer-checked:opacity-100 peer-checked:bg-red-50 peer-checked:border-red-400 peer-checked:text-red-800 peer-checked:ring-1 peer-checked:ring-red-300">
-                                Alfa
+                                Alpa
                             </div>
                         </label>
 

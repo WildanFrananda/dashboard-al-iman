@@ -7,7 +7,6 @@ use App\Livewire\ManageSettings;
 use App\Livewire\Attendance;
 use App\Livewire\AttendanceRecap;
 use App\Livewire\Auth\Login;
-use App\Livewire\CreateSubject;
 use App\Livewire\Dashboard;
 use App\Livewire\ManageClass;
 use App\Livewire\ManageGrade;
@@ -46,8 +45,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/student-grade', StudentGrade::class)->name('student-grade');       // Murid
     Route::get('/admin-grade-recap', AdminGradeRecap::class)->name('admin-grade-recap'); // Admin
     Route::get('/manage-user', ManageUser::class)->name('manage-user');
-    Route::get('/manage-subject/create', CreateSubject::class)->name('create-subject');
-    Route::get('/manage-subject', ManageSubject::class)->name('manage-subject');
+Route::get('/manage-subject', ManageSubject::class)->name('manage-subject');
     Route::get('/manage-class', ManageClass::class)->name('manage-class');
     Route::get('/manage-schedule', ManageSchedule::class)->name('manage-schedule');
     Route::get('/manage-student', ManageStudent::class)->name('manage-student');

@@ -6,20 +6,26 @@
         <div class="text-white font-bold text-lg hidden md:block">Manage Murid</div>
 
         <!-- Search -->
-        <div class="w-full md:w-[300px]">
-            <flux:input wire:model.live.debounce.300ms="search"
-                        icon="magnifying-glass"
-                        placeholder="Cari murid..."
-                        class="w-full [&_input]:!rounded-full [&_input]:!bg-white [&_input]:!text-gray-800 [&_input::placeholder]:!text-gray-400 [&_svg]:!text-gray-400" />
+        <div class="w-full md:w-[300px] relative">
+            <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0016.803 15.803z"/>
+                </svg>
+            </span>
+            <input type="text"
+                   wire:model.live.debounce.300ms="search"
+                   placeholder="Cari murid..."
+                   class="w-full pl-9 pr-4 py-2 rounded-full bg-white text-gray-800 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50">
         </div>
 
         <!-- Year Selector -->
         <div class="w-full md:w-[160px]">
-            <flux:select wire:model.live="selectedYear" class="[&_button]:!bg-white [&_button]:!rounded-full">
+            <select wire:model.live="selectedYear"
+                    class="w-full px-4 py-2 rounded-full bg-white text-gray-700 text-sm border-0 focus:outline-none focus:ring-2 focus:ring-white/50 cursor-pointer">
                 @foreach($availableYears as $year)
-                    <flux:select.option value="{{ $year }}">{{ $year }}</flux:select.option>
+                    <option value="{{ $year }}">{{ $year }}</option>
                 @endforeach
-            </flux:select>
+            </select>
         </div>
 
         <!-- Tambah -->

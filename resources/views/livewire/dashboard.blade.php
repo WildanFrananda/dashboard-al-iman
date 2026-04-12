@@ -44,7 +44,7 @@
             <div class="flex items-center justify-between">
                 <h3 class="font-bold text-gray-900">Rekap Kelas Tahun Ajaran</h3>
                 <a href="{{ route('manage-class') }}"
-                   class="text-xs text-[#006C9C] hover:underline font-medium">
+                   class="text-xs text-[#0F609B] hover:underline font-medium">
                     Kelola Kelas →
                 </a>
             </div>
@@ -53,7 +53,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 @foreach($kelasRecap as $kelas)
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="bg-[#006C9C] px-4 py-2 flex items-center justify-between">
+                    <div class="bg-[#0F609B] px-4 py-2 flex items-center justify-between">
                         <span class="text-white font-bold text-sm">{{ $kelas['nama'] }}</span>
                         <span class="text-xs text-blue-200 font-mono">{{ $kelas['kode'] }}</span>
                     </div>
@@ -86,7 +86,7 @@
                 <h3 class="font-bold text-gray-900">{{ $scheduleTitle }}</h3>
                 @if(Auth::user()->role === 'guru')
                 <a href="{{ route('manage-schedule') }}"
-                   class="text-xs text-[#006C9C] hover:underline font-medium">
+                   class="text-xs text-[#0F609B] hover:underline font-medium">
                     Kelola Jadwal →
                 </a>
                 @endif
@@ -96,7 +96,7 @@
             <div class="flex overflow-x-auto gap-4 pb-4 md:grid md:grid-cols-2 md:pb-0 scrollbar-hide">
                 @foreach($schedule as $item)
                 <div class="min-w-[250px] bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex-shrink-0">
-                    <div class="bg-[#006C9C] px-4 py-2 text-white font-bold text-sm">
+                    <div class="bg-[#0F609B] px-4 py-2 text-white font-bold text-sm">
                         {{ $item['day'] }}
                     </div>
                     <div class="p-4 space-y-4">
@@ -128,24 +128,74 @@
 
             <!-- Bottom Info Cards (sama untuk semua role) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Attendance Chart Placeholder -->
+                <!-- Attendance Chart (real data) -->
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 min-h-[200px]">
-                    <h4 class="text-sm font-bold text-gray-900 mb-4">Tingkat Kehadiran Mingguan (%)</h4>
-                    <div class="relative h-32 w-full border-b border-l border-gray-200 flex items-end justify-around px-2">
-                        <div class="w-8 bg-blue-100 h-[80%] rounded-t-sm"></div>
-                        <div class="w-8 bg-blue-100 h-[100%] rounded-t-sm"></div>
-                        <div class="w-8 bg-blue-100 h-[90%] rounded-t-sm"></div>
-                        <div class="w-8 bg-blue-100 h-[85%] rounded-t-sm"></div>
-                        <div class="w-8 bg-blue-100 h-[95%] rounded-t-sm"></div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-sm font-bold text-gray-900">Tingkat Kehadiran Minggu Ini</h4>
+                        @php
+                            $validDays = collect($weeklyAttendance)->whereNotNull('percentage');
+                            $avgPct    = $validDays->count() > 0
+                                ? (int) round($validDays->avg('percentage'))
+                                : null;
+                        @endphp
+                        @if($avgPct !== null)
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full
+                            {{ $avgPct >= 80 ? 'bg-green-100 text-green-700' : ($avgPct >= 60 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700') }}">
+                            Rata-rata {{ $avgPct }}%
+                        </span>
+                        @endif
                     </div>
-                    <div class="flex justify-around text-[10px] text-gray-400 mt-2">
-                        <span>Senin</span><span>Selasa</span><span>Rabu</span><span>Kamis</span><span>Jumat</span>
+
+                    @php $hasAnyData = collect($weeklyAttendance)->whereNotNull('percentage')->isNotEmpty(); @endphp
+
+                    @if($hasAnyData)
+                    {{-- Bar chart --}}
+                    <div class="relative h-32 w-full border-b border-l border-gray-200 flex items-end justify-around px-2 gap-1">
+                        @foreach($weeklyAttendance as $day)
+                        @php
+                            $pct      = $day['percentage'];
+                            $height   = $pct !== null ? max(4, $pct) : 0;
+                            $barColor = $pct === null
+                                ? 'bg-gray-100'
+                                : ($pct >= 80 ? 'bg-[#0F609B]' : ($pct >= 60 ? 'bg-yellow-400' : 'bg-red-400'));
+                        @endphp
+                        <div class="flex flex-col items-center justify-end h-full flex-1 gap-1 group relative">
+                            @if($pct !== null)
+                            {{-- Tooltip --}}
+                            <div class="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 hidden group-hover:flex
+                                        bg-gray-800 text-white text-[10px] rounded px-1.5 py-0.5 whitespace-nowrap z-10 pointer-events-none">
+                                {{ $day['hadir'] }}/{{ $day['total'] }} hadir ({{ $pct }}%)
+                            </div>
+                            @endif
+                            <div class="{{ $barColor }} w-full rounded-t-sm transition-all duration-500"
+                                 style="height: {{ $height }}%"></div>
+                        </div>
+                        @endforeach
                     </div>
+                    {{-- Hari labels + angka --}}
+                    <div class="flex justify-around mt-2 gap-1">
+                        @foreach($weeklyAttendance as $day)
+                        <div class="flex-1 text-center">
+                            <p class="text-[10px] text-gray-400">{{ $day['day'] }}</p>
+                            <p class="text-[10px] font-semibold {{ $day['percentage'] !== null ? 'text-gray-700' : 'text-gray-300' }}">
+                                {{ $day['percentage'] !== null ? $day['percentage'].'%' : '-' }}
+                            </p>
+                        </div>
+                        @endforeach
+                    </div>
+                    @else
+                    <div class="flex flex-col items-center justify-center h-32 text-gray-400 text-xs gap-2">
+                        <svg class="w-8 h-8 text-gray-200" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/>
+                        </svg>
+                        Belum ada data absensi minggu ini
+                    </div>
+                    @endif
                 </div>
 
                 <!-- Academic Info -->
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 min-h-[200px]">
-                    <h4 class="text-sm font-bold text-[#006C9C] mb-2">Informasi Pengembangan <br> Akademik Siswa</h4>
+                    <h4 class="text-sm font-bold text-[#0F609B] mb-2">Informasi Pengembangan <br> Akademik Siswa</h4>
                     <p class="text-xs text-gray-500 leading-relaxed text-justify">
                         Semangat belajar yang konsisten adalah kunci keberhasilan. Terus ulang pelajaran di rumah,
                         aktif bertanya di kelas, dan berpartisipasi dalam kegiatan sekolah untuk meraih prestasi terbaik.
