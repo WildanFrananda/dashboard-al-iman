@@ -19,7 +19,7 @@ class PertemuanKelasFactory extends Factory
     {
         return [
             'teaching_schedule_id' => TeachingSchedule::factory(),
-            'tanggal_pertemuan'    => fake()->dateThisMonth()->format('Y-m-d'),
+            'tanggal_pertemuan'    => now()->addDays(fake()->numberBetween(-15, 15))->format('Y-m-d'),
             'materi'               => fake()->sentence(),
         ];
     }

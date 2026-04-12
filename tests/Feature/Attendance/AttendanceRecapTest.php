@@ -16,5 +16,5 @@ it('allows guru to access attendance-recap component', function () {
 
 it('aborts 403 when murid tries to access attendance-recap component', function () {
     loginAsMurid();
-    $this->get('/attendance-recap')->assertRedirectToRoute('dashboard');
+    Livewire\Livewire::test(AttendanceRecap::class)->assertForbidden();
 });
