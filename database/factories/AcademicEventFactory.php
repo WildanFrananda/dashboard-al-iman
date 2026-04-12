@@ -21,7 +21,7 @@ class AcademicEventFactory extends Factory
         return [
             'title'       => fake()->sentence(4),
             'category'    => $category,
-            'start_date'  => fake()->dateThisMonth()->format('Y-m-d'),
+            'start_date'  => now()->addDays(fake()->numberBetween(-15, 15))->format('Y-m-d'),
             'end_date'    => null,
             'location'    => fake()->city(),
             'description' => fake()->sentence(),

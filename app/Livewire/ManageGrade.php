@@ -35,6 +35,7 @@ class ManageGrade extends Component {
 
         $this->teacherName = $user->profilGuru->nama_lengkap;
         $this->tahunAjaran = $this->currentTahunAjaran();
+        $this->semester    = (int) now()->format('m') >= 7 ? 1 : 2;
     }
 
     #[Computed]

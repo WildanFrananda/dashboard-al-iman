@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 use App\Models\AcademicEvent;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(RefreshDatabase::class);
 
 describe('AcademicEvent::defaultColor()', function () {
     it('returns red for libur category', function () {
