@@ -15,28 +15,33 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 #[Title('Input Nilai - SIAKMAN')]
 class ManageGrade extends Component {
-    public string $teacherName  = '';
-    public string $scheduleId   = '';
-    public int    $semester     = 1;
-    public string $tahunAjaran  = '';
+    public string $teacherName = '';
+
+    public string $scheduleId = '';
+
+    public int $semester = 1;
+
+    public string $tahunAjaran = '';
 
     /**
      * $grades[murid_id] = ['uts' => int|null, 'uas' => int|null, 'keterangan' => string]
      */
-    public array $grades   = [];
+    public array $grades = [];
+
     public array $students = [];
 
     public function mount(): void {
         $user = Auth::user();
 
-        if (! $user || $user->role !== 'guru' || ! $user->profilGuru) {
+        if (!$user || $user->role !== 'guru' || !$user->profilGuru) {
             redirect()->route('dashboard');
+
             return;
         }
 
         $this->teacherName = $user->profilGuru->nama_lengkap;
         $this->tahunAjaran = $this->currentTahunAjaran();
-        $this->semester    = (int) now()->format('m') >= 7 ? 1 : 2;
+        $this->semester = (int) now()->format('m') >= 7 ? 1 : 2;
     }
 
     #[Computed]
@@ -46,9 +51,17 @@ class ManageGrade extends Component {
             ->get();
     }
 
-    public function updatedScheduleId(): void  { $this->loadStudents(); }
-    public function updatedSemester(): void    { $this->loadStudents(); }
-    public function updatedTahunAjaran(): void { $this->loadStudents(); }
+    public function updatedScheduleId(): void {
+        $this->loadStudents();
+    }
+
+    public function updatedSemester(): void {
+        $this->loadStudents();
+    }
+
+    public function updatedTahunAjaran(): void {
+        $this->loadStudents();
+    }
 
     /**
      * Dipanggil otomatis setiap kali $grades berubah via wire:model.blur.
@@ -58,7 +71,7 @@ class ManageGrade extends Component {
     public function updatedGrades(mixed $value, string $key): void {
         [$muridId, $field] = array_pad(explode('.', $key, 2), 2, '');
 
-        if (! in_array($field, ['uts', 'uas'], true)) {
+        if (!in_array($field, ['uts', 'uas'], true)) {
             return;
         }
 
@@ -66,6 +79,7 @@ class ManageGrade extends Component {
 
         if ($value === null || $value === '') {
             $this->resetErrorBag($errorKey);
+
             return;
         }
 
@@ -80,9 +94,9 @@ class ManageGrade extends Component {
 
     public function loadStudents(): void {
         $this->students = [];
-        $this->grades   = [];
+        $this->grades = [];
 
-        if (! $this->scheduleId || ! $this->tahunAjaran) {
+        if (!$this->scheduleId || !$this->tahunAjaran) {
             return;
         }
 
@@ -92,7 +106,7 @@ class ManageGrade extends Component {
             ->with('kelas.murids')
             ->first();
 
-        if (! $schedule?->kelas) {
+        if (!$schedule?->kelas) {
             return;
         }
 
@@ -107,30 +121,30 @@ class ManageGrade extends Component {
 
         foreach ($schedule->kelas->murids as $murid) {
             $this->students[] = [
-                'id'   => $murid->id,
+                'id' => $murid->id,
                 'name' => $murid->nama_lengkap,
-                'nis'  => $murid->nis,
+                'nis' => $murid->nis,
             ];
 
             $uts = $existingNilais->get($murid->id)?->firstWhere('tipe_nilai', 'UTS');
             $uas = $existingNilais->get($murid->id)?->firstWhere('tipe_nilai', 'UAS');
 
             $this->grades[$murid->id] = [
-                'uts'         => $uts?->nilai,
-                'uas'         => $uas?->nilai,
-                'keterangan'  => $uts?->keterangan ?? $uas?->keterangan ?? '',
+                'uts' => $uts?->nilai,
+                'uas' => $uas?->nilai,
+                'keterangan' => $uts?->keterangan ?? $uas?->keterangan ?? '',
             ];
         }
     }
 
     public function submit(): void {
         $this->validate([
-            'scheduleId'                   => 'required|exists:teaching_schedules,id',
-            'semester'                     => 'required|in:1,2',
-            'tahunAjaran'                  => ['required', 'regex:/^\d{4}\/\d{4}$/'],
-            'grades.*.uts'                 => 'nullable|integer|min:0|max:100',
-            'grades.*.uas'                 => 'nullable|integer|min:0|max:100',
-            'grades.*.keterangan'          => 'nullable|string|max:500',
+            'scheduleId' => 'required|exists:teaching_schedules,id',
+            'semester' => 'required|in:1,2',
+            'tahunAjaran' => ['required', 'regex:/^\d{4}\/\d{4}$/'],
+            'grades.*.uts' => 'nullable|integer|min:0|max:100',
+            'grades.*.uas' => 'nullable|integer|min:0|max:100',
+            'grades.*.keterangan' => 'nullable|string|max:500',
         ]);
 
         // Security: verifikasi kepemilikan jadwal
@@ -138,18 +152,19 @@ class ManageGrade extends Component {
             ->where('guru_id', Auth::user()->profilGuru->id)
             ->first();
 
-        if (! $schedule) {
+        if (!$schedule) {
             session()->flash('error', 'Anda tidak memiliki akses ke jadwal ini.');
+
             return;
         }
 
-        $guruId    = Auth::user()->profilGuru->id;
+        $guruId = Auth::user()->profilGuru->id;
         $subjectId = $schedule->subject_id;
-        $kelasId   = $schedule->kelas_id;
+        $kelasId = $schedule->kelas_id;
 
         foreach ($this->students as $student) {
-            $muridId    = $student['id'];
-            $gradeData  = $this->grades[$muridId] ?? [];
+            $muridId = $student['id'];
+            $gradeData = $this->grades[$muridId] ?? [];
             $keterangan = $gradeData['keterangan'] ?? null;
 
             foreach (['uts' => 'UTS', 'uas' => 'UAS'] as $key => $tipe) {
@@ -161,17 +176,17 @@ class ManageGrade extends Component {
 
                 Nilai::updateOrCreate(
                     [
-                        'murid_id'     => $muridId,
-                        'subject_id'   => $subjectId,
-                        'kelas_id'     => $kelasId,
-                        'tipe_nilai'   => $tipe,
-                        'semester'     => $this->semester,
+                        'murid_id' => $muridId,
+                        'subject_id' => $subjectId,
+                        'kelas_id' => $kelasId,
+                        'tipe_nilai' => $tipe,
+                        'semester' => $this->semester,
                         'tahun_ajaran' => $this->tahunAjaran,
                     ],
                     [
-                        'guru_id'     => $guruId,
-                        'nilai'       => (int) $nilaiInput,
-                        'keterangan'  => $keterangan ?: null,
+                        'guru_id' => $guruId,
+                        'nilai' => (int) $nilaiInput,
+                        'keterangan' => $keterangan ?: null,
                     ]
                 );
             }
@@ -181,7 +196,7 @@ class ManageGrade extends Component {
     }
 
     private function currentTahunAjaran(): string {
-        $year  = (int) now()->format('Y');
+        $year = (int) now()->format('Y');
         $month = (int) now()->format('m');
 
         // Tahun ajaran baru mulai Juli

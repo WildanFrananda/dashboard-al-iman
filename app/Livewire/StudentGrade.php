@@ -14,18 +14,19 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 #[Title('Nilai Saya - SIAKMAN')]
 class StudentGrade extends Component {
-    public int    $semester    = 1;
+    public int $semester = 1;
+
     public string $tahunAjaran = '';
 
     public function mount(): void {
         $user = Auth::user();
 
-        if (! $user?->profilMurid) {
+        if (!$user?->profilMurid) {
             abort(403, 'Halaman ini hanya untuk murid.');
         }
 
         // Default ke semester yang aktif berdasarkan bulan
-        $month          = (int) now()->format('m');
+        $month = (int) now()->format('m');
         $this->semester = $month >= 7 ? 1 : 2;
 
         $this->tahunAjaran = $this->currentTahunAjaran();
@@ -35,7 +36,7 @@ class StudentGrade extends Component {
     public function gradeRecords(): array {
         $murid = Auth::user()->profilMurid;
 
-        if (! $murid) {
+        if (!$murid) {
             return [];
         }
 
@@ -55,9 +56,9 @@ class StudentGrade extends Component {
             $uas = $subjectNilais->firstWhere('tipe_nilai', 'UAS');
 
             $records[] = [
-                'subject'    => $subjectNilais->first()->subject?->subject_name ?? '-',
-                'uts'        => $uts?->nilai,
-                'uas'        => $uas?->nilai,
+                'subject' => $subjectNilais->first()->subject?->subject_name ?? '-',
+                'uts' => $uts?->nilai,
+                'uas' => $uas?->nilai,
                 'keterangan' => $uts?->keterangan ?? $uas?->keterangan ?? null,
             ];
         }
@@ -75,12 +76,12 @@ class StudentGrade extends Component {
         return [
             'rata_uts' => count($utsValues) > 0 ? round(array_sum($utsValues) / count($utsValues), 1) : null,
             'rata_uas' => count($uasValues) > 0 ? round(array_sum($uasValues) / count($uasValues), 1) : null,
-            'mapel'    => count($records),
+            'mapel' => count($records),
         ];
     }
 
     private function currentTahunAjaran(): string {
-        $year  = (int) now()->format('Y');
+        $year = (int) now()->format('Y');
         $month = (int) now()->format('m');
 
         return $month >= 7 ? $year.'/'.($year + 1) : ($year - 1).'/'.$year;

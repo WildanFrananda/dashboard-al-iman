@@ -13,18 +13,16 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends Factory<TeachingSchedule>
  */
-class TeachingScheduleFactory extends Factory
-{
+class TeachingScheduleFactory extends Factory {
     protected $model = TeachingSchedule::class;
 
-    public function definition(): array
-    {
+    public function definition(): array {
         return [
-            'guru_id'    => ProfilGuru::factory(),
+            'guru_id' => ProfilGuru::factory(),
             'subject_id' => Subject::factory(),
-            'kelas_id'   => Kelas::factory(),
-            'hari'       => fake()->randomElement(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat']),
-            'jam_mulai'  => '08:00',
+            'kelas_id' => Kelas::factory(),
+            'hari' => fake()->randomElement(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat']),
+            'jam_mulai' => '08:00',
             'jam_selesai' => '09:00',
         ];
     }

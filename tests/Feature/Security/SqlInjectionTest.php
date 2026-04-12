@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use App\Livewire\ManageUser;
 use App\Livewire\ManageClass;
 use App\Livewire\ManageStudent;
+use App\Livewire\ManageUser;
 
 beforeEach(function () {
     loginAsAdmin();

@@ -25,16 +25,16 @@ class AcademicEvent extends Model {
 
     protected $casts = [
         'start_date' => 'date',
-        'end_date'   => 'date',
+        'end_date' => 'date',
     ];
 
     /** Warna default per kategori. */
     public static function defaultColor(string $category): string {
-        return match($category) {
-            'libur'    => '#EF4444',
-            'ujian'    => '#F28B2B',
+        return match ($category) {
+            'libur' => '#EF4444',
+            'ujian' => '#F28B2B',
             'kegiatan' => '#10B981',
-            default    => '#0F609B',
+            default => '#0F609B',
         };
     }
 
@@ -43,9 +43,9 @@ class AcademicEvent extends Model {
         return $query->where(function ($q) {
             $today = today();
             $q->where('start_date', '>=', $today)
-              ->orWhere(function ($q2) use ($today) {
-                  $q2->whereNotNull('end_date')->where('end_date', '>=', $today);
-              });
+                ->orWhere(function ($q2) use ($today) {
+                    $q2->whereNotNull('end_date')->where('end_date', '>=', $today);
+                });
         })->orderBy('start_date');
     }
 }

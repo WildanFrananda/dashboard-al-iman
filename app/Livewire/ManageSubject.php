@@ -19,14 +19,18 @@ class ManageSubject extends Component {
     public string $search = '';
 
     // Modal state
-    public bool   $showModal  = false;
-    public ?int   $editingId  = null;
+    public bool $showModal = false;
+
+    public ?int $editingId = null;
 
     // Form fields
-    public string $form_code     = '';
-    public string $form_name     = '';
+    public string $form_code = '';
+
+    public string $form_name = '';
+
     public string $form_category = 'Wajib';
-    public bool   $form_active   = true;
+
+    public bool $form_active = true;
 
     public function mount(): void {
         if (auth()->user()?->role !== 'admin') {
@@ -49,12 +53,12 @@ class ManageSubject extends Component {
     public function openEditForm(int $id): void {
         $subject = Subject::findOrFail($id);
 
-        $this->editingId      = $id;
-        $this->form_code      = $subject->subject_code;
-        $this->form_name      = $subject->subject_name;
-        $this->form_category  = $subject->category;
-        $this->form_active    = (bool) $subject->is_active;
-        $this->showModal      = true;
+        $this->editingId = $id;
+        $this->form_code = $subject->subject_code;
+        $this->form_name = $subject->subject_name;
+        $this->form_category = $subject->category;
+        $this->form_active = (bool) $subject->is_active;
+        $this->showModal = true;
         $this->resetErrorBag();
     }
 
@@ -73,16 +77,16 @@ class ManageSubject extends Component {
                     ? Rule::unique('subjects', 'subject_code')->ignore($this->editingId)
                     : Rule::unique('subjects', 'subject_code'),
             ],
-            'form_name'     => 'required|string|max:255',
+            'form_name' => 'required|string|max:255',
             'form_category' => 'required|in:Wajib,Muatan Lokal,Ekstrakurikuler',
-            'form_active'   => 'boolean',
+            'form_active' => 'boolean',
         ]);
 
         $data = [
             'subject_code' => $this->form_code,
             'subject_name' => $this->form_name,
-            'category'     => $this->form_category,
-            'is_active'    => $this->form_active,
+            'category' => $this->form_category,
+            'is_active' => $this->form_active,
         ];
 
         if ($this->editingId) {
@@ -105,9 +109,8 @@ class ManageSubject extends Component {
 
     public function render() {
         $subjects = Subject::query()
-            ->when($this->search !== '', fn ($q) =>
-                $q->where('subject_name', 'like', '%'.$this->search.'%')
-                  ->orWhere('subject_code', 'like', '%'.$this->search.'%')
+            ->when($this->search !== '', fn ($q) => $q->where('subject_name', 'like', '%'.$this->search.'%')
+                ->orWhere('subject_code', 'like', '%'.$this->search.'%')
             )
             ->latest()
             ->paginate(10);
@@ -118,10 +121,10 @@ class ManageSubject extends Component {
     // ── Private ───────────────────────────────────────────────────────────────
 
     private function resetForm(): void {
-        $this->form_code     = '';
-        $this->form_name     = '';
+        $this->form_code = '';
+        $this->form_name = '';
         $this->form_category = 'Wajib';
-        $this->form_active   = true;
+        $this->form_active = true;
         $this->resetErrorBag();
     }
 }

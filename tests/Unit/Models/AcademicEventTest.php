@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\AcademicEvent;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 
 uses(RefreshDatabase::class);
 
@@ -37,15 +38,15 @@ describe('AcademicEvent::defaultColor()', function () {
 describe('AcademicEvent date casts', function () {
     it('casts start_date as Carbon instance', function () {
         $event = AcademicEvent::factory()->make(['start_date' => '2025-06-01']);
-        expect($event->start_date)->toBeInstanceOf(\Illuminate\Support\Carbon::class);
+        expect($event->start_date)->toBeInstanceOf(Carbon::class);
     });
 
     it('casts end_date as Carbon instance when present', function () {
         $event = AcademicEvent::factory()->make([
             'start_date' => '2025-06-01',
-            'end_date'   => '2025-06-05',
+            'end_date' => '2025-06-05',
         ]);
-        expect($event->end_date)->toBeInstanceOf(\Illuminate\Support\Carbon::class);
+        expect($event->end_date)->toBeInstanceOf(Carbon::class);
     });
 
     it('allows null end_date', function () {

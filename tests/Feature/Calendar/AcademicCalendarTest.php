@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Livewire\AcademicCalendar;
 use App\Models\AcademicEvent;
+use Carbon\Carbon;
 
 describe('AcademicCalendar — navigation', function () {
     beforeEach(function () {
@@ -17,47 +18,47 @@ describe('AcademicCalendar — navigation', function () {
     });
 
     it('navigates to previous month on previousMonth call', function () {
-        \Carbon\Carbon::setTestNow(\Carbon\Carbon::create(2025, 6, 15));
+        Carbon::setTestNow(Carbon::create(2025, 6, 15));
 
         Livewire\Livewire::test(AcademicCalendar::class)
             ->call('previousMonth')
             ->assertSet('month', 5)
             ->assertSet('year', 2025);
 
-        \Carbon\Carbon::setTestNow();
+        Carbon::setTestNow();
     });
 
     it('navigates to next month on nextMonth call', function () {
-        \Carbon\Carbon::setTestNow(\Carbon\Carbon::create(2025, 6, 15));
+        Carbon::setTestNow(Carbon::create(2025, 6, 15));
 
         Livewire\Livewire::test(AcademicCalendar::class)
             ->call('nextMonth')
             ->assertSet('month', 7)
             ->assertSet('year', 2025);
 
-        \Carbon\Carbon::setTestNow();
+        Carbon::setTestNow();
     });
 
     it('wraps month to December when going back from January', function () {
-        \Carbon\Carbon::setTestNow(\Carbon\Carbon::create(2025, 1, 15));
+        Carbon::setTestNow(Carbon::create(2025, 1, 15));
 
         Livewire\Livewire::test(AcademicCalendar::class)
             ->call('previousMonth')
             ->assertSet('month', 12)
             ->assertSet('year', 2024);
 
-        \Carbon\Carbon::setTestNow();
+        Carbon::setTestNow();
     });
 
     it('wraps month to January when going forward from December', function () {
-        \Carbon\Carbon::setTestNow(\Carbon\Carbon::create(2025, 12, 15));
+        Carbon::setTestNow(Carbon::create(2025, 12, 15));
 
         Livewire\Livewire::test(AcademicCalendar::class)
             ->call('nextMonth')
             ->assertSet('month', 1)
             ->assertSet('year', 2026);
 
-        \Carbon\Carbon::setTestNow();
+        Carbon::setTestNow();
     });
 });
 

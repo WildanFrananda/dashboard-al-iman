@@ -9,14 +9,14 @@ it('rate limits login attempts after exceeding threshold', function () {
     for ($i = 0; $i < 6; $i++) {
         $this->withoutMiddleware(ValidateCsrfToken::class)
             ->post('/login', [
-                'email'    => 'notexist@example.com',
+                'email' => 'notexist@example.com',
                 'password' => 'wrongpassword',
             ]);
     }
 
     $response = $this->withoutMiddleware(ValidateCsrfToken::class)
         ->post('/login', [
-            'email'    => 'notexist@example.com',
+            'email' => 'notexist@example.com',
             'password' => 'wrongpassword',
         ]);
 

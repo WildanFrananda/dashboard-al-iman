@@ -8,6 +8,7 @@ use App\Models\Kelas;
 use App\Models\ProfilGuru;
 use App\Models\Subject;
 use App\Models\TeachingSchedule;
+use Carbon\Carbon;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -22,14 +23,20 @@ class ManageSchedule extends Component {
 
     // Form fields
     public $guru_id = '';
+
     public $subject_id = '';
+
     public $kelas_id = '';
+
     public $hari = '';
+
     public $jam_mulai = '';
+
     public $jam_selesai = '';
 
     // Edit state
     public $editingId = null;
+
     public $showForm = false;
 
     public $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
@@ -97,8 +104,8 @@ class ManageSchedule extends Component {
         $this->subject_id = $schedule->subject_id;
         $this->kelas_id = $schedule->kelas_id;
         $this->hari = $schedule->hari;
-        $this->jam_mulai = $schedule->jam_mulai ? \Carbon\Carbon::parse($schedule->jam_mulai)->format('H:i') : '';
-        $this->jam_selesai = $schedule->jam_selesai ? \Carbon\Carbon::parse($schedule->jam_selesai)->format('H:i') : '';
+        $this->jam_mulai = $schedule->jam_mulai ? Carbon::parse($schedule->jam_mulai)->format('H:i') : '';
+        $this->jam_selesai = $schedule->jam_selesai ? Carbon::parse($schedule->jam_selesai)->format('H:i') : '';
         $this->showForm = true;
     }
 
@@ -114,13 +121,13 @@ class ManageSchedule extends Component {
                 $query->whereHas('guru', function ($q) {
                     $q->where('nama_lengkap', 'ilike', "%{$this->search}%");
                 })
-                ->orWhereHas('subject', function ($q) {
-                    $q->where('subject_name', 'ilike', "%{$this->search}%");
-                })
-                ->orWhereHas('kelas', function ($q) {
-                    $q->where('nama_kelas', 'ilike', "%{$this->search}%");
-                })
-                ->orWhere('hari', 'ilike', "%{$this->search}%");
+                    ->orWhereHas('subject', function ($q) {
+                        $q->where('subject_name', 'ilike', "%{$this->search}%");
+                    })
+                    ->orWhereHas('kelas', function ($q) {
+                        $q->where('nama_kelas', 'ilike', "%{$this->search}%");
+                    })
+                    ->orWhere('hari', 'ilike', "%{$this->search}%");
             })
             ->orderBy('hari')
             ->orderBy('jam_mulai')

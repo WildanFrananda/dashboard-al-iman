@@ -8,10 +8,10 @@ use App\Models\User;
 it('cannot mass-assign role through fillable to escalate privilege', function () {
     // role tidak ada di fillable User, sehingga tidak bisa di-assign via array
     $user = new User([
-        'name'     => 'Hacker',
-        'email'    => 'hacker@example.com',
+        'name' => 'Hacker',
+        'email' => 'hacker@example.com',
         'password' => 'password',
-        'role'     => 'admin', // seharusnya tidak masuk karena tidak di fillable User::$fillable
+        'role' => 'admin', // seharusnya tidak masuk karena tidak di fillable User::$fillable
     ]);
 
     // role tidak ada di $fillable User — model akan ignore field ini
@@ -28,11 +28,11 @@ it('cannot set student status to lulus via mass assignment from form', function 
 
 it('ProfilMurid fillable does not allow injecting arbitrary fields', function () {
     $murid = new ProfilMurid([
-        'user_id'           => 1,
-        'nis'               => '1234567890',
-        'nama_lengkap'      => 'Test',
-        'status'            => 'aktif',
-        'injected_field'    => 'malicious', // field ini tidak di fillable
+        'user_id' => 1,
+        'nis' => '1234567890',
+        'nama_lengkap' => 'Test',
+        'status' => 'aktif',
+        'injected_field' => 'malicious', // field ini tidak di fillable
     ]);
 
     expect(isset($murid->injected_field))->toBeFalse();

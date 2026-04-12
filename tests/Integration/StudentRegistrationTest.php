@@ -10,15 +10,15 @@ describe('Student registration DB transaction', function () {
     it('creates both User and ProfilMurid in a single transaction', function () {
         DB::transaction(function () {
             $user = User::factory()->murid()->create([
-                'name'  => 'Test Student',
+                'name' => 'Test Student',
                 'email' => 'student@test.com',
             ]);
 
             ProfilMurid::create([
-                'user_id'      => $user->id,
-                'nis'          => '1234567890',
+                'user_id' => $user->id,
+                'nis' => '1234567890',
                 'nama_lengkap' => 'Test Student',
-                'status'       => 'aktif',
+                'status' => 'aktif',
             ]);
         });
 
@@ -34,13 +34,13 @@ describe('Student registration DB transaction', function () {
                 User::factory()->murid()->create(['email' => 'rollback@test.com']);
                 // Simulate failure by inserting invalid ProfilMurid
                 ProfilMurid::create([
-                    'user_id'      => null, // violates NOT NULL
-                    'nis'          => '9999999999',
+                    'user_id' => null, // violates NOT NULL
+                    'nis' => '9999999999',
                     'nama_lengkap' => 'Will Fail',
-                    'status'       => 'aktif',
+                    'status' => 'aktif',
                 ]);
             });
-        } catch (\Exception) {
+        } catch (Exception) {
             // expected
         }
 

@@ -39,8 +39,11 @@ class ManageClass extends Component {
 
     // Promotion State
     public $showPromotionModal = false;
+
     public $promotionStep = 1;
+
     public $selectedStayBackIds = []; // IDs of ProfilMurid who will NOT be promoted
+
     public $newAcademicYear = '';
 
     public function mount() {
@@ -48,7 +51,7 @@ class ManageClass extends Component {
             return redirect()->route('dashboard');
         }
         $this->tahun_ajaran = date('Y').'/'.(date('Y') + 1);
-        
+
         $currentYear = (int) date('Y');
         $this->newAcademicYear = ($currentYear + 1).'/'.($currentYear + 2);
     }
@@ -136,31 +139,34 @@ class ManageClass extends Component {
 
     public function processPromotion() {
         $students = ProfilMurid::where('status', 'aktif')->get();
-        
+
         DB::beginTransaction();
         try {
             foreach ($students as $student) {
                 // 1. Ambil Kelas saat ini (di tahun ajaran sumber)
                 $currentClass = $student->kelas()->wherePivot('tahun_ajaran', $this->tahun_ajaran)->first();
-                if (!$currentClass) continue;
+                if (!$currentClass) {
+                    continue;
+                }
 
                 // 2. Berpindah (Naik atau Tetap)?
-                $shouldStayBack = in_array((string)$student->id, $this->selectedStayBackIds);
-                
+                $shouldStayBack = in_array((string) $student->id, $this->selectedStayBackIds);
+
                 if ($shouldStayBack) {
                     // Cari/Buat header kelas yang SAMA untuk TAHUN BARU
                     $nextClass = Kelas::firstOrCreate(
                         ['level' => $currentClass->level, 'kelompok' => $currentClass->kelompok, 'tahun_ajaran' => $this->newAcademicYear],
                         [
                             'nama_kelas' => $currentClass->nama_kelas,
-                            'kode_kelas' => $currentClass->kode_kelas . '-' . $this->newAcademicYear,
-                            'wali_kelas_id' => $currentClass->wali_kelas_id
+                            'kode_kelas' => $currentClass->kode_kelas.'-'.$this->newAcademicYear,
+                            'wali_kelas_id' => $currentClass->wali_kelas_id,
                         ]
                     );
                 } else {
                     // Cek Kelulusan (Level 6)
                     if ($currentClass->level >= 6) {
                         $student->update(['status' => 'lulus']);
+
                         continue;
                     }
 
@@ -188,16 +194,16 @@ class ManageClass extends Component {
                 // Attach ke kelas tujuan di tahun ajaran baru
                 // Menggunakan syncWithoutDetaching agar id murid & id kelas & tahun_ajaran unik di pivot
                 $student->kelas()->syncWithoutDetaching([
-                    $nextClass->id => ['tahun_ajaran' => $this->newAcademicYear]
+                    $nextClass->id => ['tahun_ajaran' => $this->newAcademicYear],
                 ]);
             }
 
             DB::commit();
-            session()->flash('message', 'Proses kenaikan kelas berhasil untuk tahun ajaran ' . $this->newAcademicYear);
+            session()->flash('message', 'Proses kenaikan kelas berhasil untuk tahun ajaran '.$this->newAcademicYear);
             $this->showPromotionModal = false;
         } catch (\Exception $e) {
             DB::rollBack();
-            session()->flash('error', 'Gagal memproses kenaikan: ' . $e->getMessage());
+            session()->flash('error', 'Gagal memproses kenaikan: '.$e->getMessage());
         }
     }
 

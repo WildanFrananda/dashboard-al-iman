@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
-use App\Livewire\AdminGradeRecap;
 use App\Livewire\AcademicCalendar;
+use App\Livewire\AdminGradeRecap;
 use App\Livewire\AttendanceRecap;
 use App\Livewire\Dashboard;
 use App\Livewire\ManageUser;
 use App\Models\AcademicEvent;
+use App\Models\Kelas;
+use App\Models\ProfilMurid;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
@@ -16,7 +18,15 @@ beforeEach(function () {
 });
 
 it('dashboard loads with fewer than 15 queries', function () {
-    User::factory()->count(5)->create(['role' => 'murid']);
+    // Buat data realistis: 6 kelas dengan murid (meniru KelasSDSeeder)
+    $kelas = Kelas::factory()->count(6)->create();
+    $murids = ProfilMurid::factory()->count(10)->create();
+    foreach ($kelas as $k) {
+        $k->murids()->attach(
+            $murids->random(3)->pluck('id'),
+            ['tahun_ajaran' => $k->tahun_ajaran]
+        );
+    }
     AcademicEvent::factory()->count(3)->upcoming()->create();
 
     DB::flushQueryLog();

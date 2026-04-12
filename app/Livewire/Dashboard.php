@@ -14,6 +14,7 @@ use App\Models\SchoolSetting;
 use App\Models\TeachingSchedule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -21,11 +22,15 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 #[Title('Dashboard - SIAKMAN')]
 class Dashboard extends Component {
-    public array  $stats           = [];
-    public array  $schedule        = [];   // guru & murid
-    public array  $kelasRecap      = [];   // admin
-    public array  $weeklyAttendance = [];  // semua role
-    public string $scheduleTitle   = 'Jadwal Pembelajaran';
+    public array $stats = [];
+
+    public array $schedule = [];   // guru & murid
+
+    public array $kelasRecap = [];   // admin
+
+    public array $weeklyAttendance = [];  // semua role
+
+    public string $scheduleTitle = 'Jadwal Pembelajaran';
 
     public function mount(): void {
         $this->loadStats();
@@ -33,7 +38,7 @@ class Dashboard extends Component {
         $user = Auth::user();
 
         match ($user?->role) {
-            'guru'  => $this->loadGuruSchedule($user),
+            'guru' => $this->loadGuruSchedule($user),
             'murid' => $this->loadMuridSchedule($user),
             default => $this->loadAdminKelasRecap(),
         };
@@ -46,39 +51,39 @@ class Dashboard extends Component {
     private function loadStats(): void {
         $this->stats = [
             [
-                'title'      => 'Jumlah Murid',
-                'value'      => (string) ProfilMurid::count(),
-                'icon_bg'    => 'bg-blue-100',
+                'title' => 'Jumlah Murid',
+                'value' => (string) ProfilMurid::count(),
+                'icon_bg' => 'bg-blue-100',
                 'icon_color' => 'text-blue-600',
-                'icon'       => 'users',
+                'icon' => 'users',
             ],
             [
-                'title'      => 'Jumlah Tenaga Pengajar',
-                'value'      => (string) ProfilGuru::count(),
-                'icon_bg'    => 'bg-green-100',
+                'title' => 'Jumlah Tenaga Pengajar',
+                'value' => (string) ProfilGuru::count(),
+                'icon_bg' => 'bg-green-100',
                 'icon_color' => 'text-green-600',
-                'icon'       => 'teacher',
+                'icon' => 'teacher',
             ],
             [
-                'title'      => 'Acara Mendatang',
-                'value'      => (string) AcademicEvent::upcoming()->count(),
-                'icon_bg'    => 'bg-pink-100',
+                'title' => 'Acara Mendatang',
+                'value' => (string) AcademicEvent::upcoming()->count(),
+                'icon_bg' => 'bg-pink-100',
                 'icon_color' => 'text-pink-600',
-                'icon'       => 'calendar',
+                'icon' => 'calendar',
             ],
             [
-                'title'      => 'Jumlah Ekstrakurikuler',
-                'value'      => SchoolSetting::get('jumlah_ekskul', '0'),
-                'icon_bg'    => 'bg-orange-100',
+                'title' => 'Jumlah Ekstrakurikuler',
+                'value' => SchoolSetting::get('jumlah_ekskul', '0'),
+                'icon_bg' => 'bg-orange-100',
                 'icon_color' => 'text-orange-600',
-                'icon'       => 'target',
+                'icon' => 'target',
             ],
             [
-                'title'      => 'Tingkat Akreditasi',
-                'value'      => SchoolSetting::get('tingkat_akreditasi', '-'),
-                'icon_bg'    => 'bg-yellow-100',
+                'title' => 'Tingkat Akreditasi',
+                'value' => SchoolSetting::get('tingkat_akreditasi', '-'),
+                'icon_bg' => 'bg-yellow-100',
                 'icon_color' => 'text-yellow-600',
-                'icon'       => 'medal',
+                'icon' => 'medal',
             ],
         ];
     }
@@ -87,7 +92,7 @@ class Dashboard extends Component {
 
     private function loadGuruSchedule($user): void {
         $profil = $user->profilGuru;
-        if (! $profil) {
+        if (!$profil) {
             return;
         }
 
@@ -111,13 +116,13 @@ class Dashboard extends Component {
         $this->schedule = collect($hariOrder)
             ->filter(fn ($h) => $rows->has($h))
             ->map(fn ($h) => [
-                'day'     => $h,
+                'day' => $h,
                 'lessons' => $rows[$h]->map(fn ($s) => [
                     'subject' => $s->subject?->subject_name ?? '-',
                     'teacher' => $s->kelas?->nama_kelas ?? '-',   // untuk guru: tampilkan nama kelas
-                    'time'    => \Carbon\Carbon::parse($s->jam_mulai)->format('H:i')
-                                 . ' – '
-                                 . \Carbon\Carbon::parse($s->jam_selesai)->format('H:i'),
+                    'time' => Carbon::parse($s->jam_mulai)->format('H:i')
+                                 .' – '
+                                 .Carbon::parse($s->jam_selesai)->format('H:i'),
                 ])->toArray(),
             ])
             ->values()
@@ -128,7 +133,7 @@ class Dashboard extends Component {
 
     private function loadMuridSchedule($user): void {
         $profil = $user->profilMurid;
-        if (! $profil) {
+        if (!$profil) {
             return;
         }
 
@@ -137,12 +142,12 @@ class Dashboard extends Component {
             ->wherePivot('tahun_ajaran', $tahunAjaran)
             ->first();
 
-        if (! $kelas) {
+        if (!$kelas) {
             // Coba kelas manapun yang diikuti
             $kelas = $profil->kelas()->latest('kelas_murid.id')->first();
         }
 
-        if (! $kelas) {
+        if (!$kelas) {
             return;
         }
 
@@ -166,13 +171,13 @@ class Dashboard extends Component {
         $this->schedule = collect($hariOrder)
             ->filter(fn ($h) => $rows->has($h))
             ->map(fn ($h) => [
-                'day'     => $h,
+                'day' => $h,
                 'lessons' => $rows[$h]->map(fn ($s) => [
                     'subject' => $s->subject?->subject_name ?? '-',
                     'teacher' => $s->guru?->nama_lengkap ?? '-',
-                    'time'    => \Carbon\Carbon::parse($s->jam_mulai)->format('H:i')
-                                 . ' – '
-                                 . \Carbon\Carbon::parse($s->jam_selesai)->format('H:i'),
+                    'time' => Carbon::parse($s->jam_mulai)->format('H:i')
+                                 .' – '
+                                 .Carbon::parse($s->jam_selesai)->format('H:i'),
                 ])->toArray(),
             ])
             ->values()
@@ -185,84 +190,109 @@ class Dashboard extends Component {
         // Gunakan tahun ajaran terbaru yang ada di DB agar tidak salah filter
         $tahunAjaran = Kelas::max('tahun_ajaran') ?? $this->currentTahunAjaran();
 
+        // Hitung murid per kelas dalam 1 query (hindari N+1)
+        $muridCounts = DB::table('kelas_murid')
+            ->where('tahun_ajaran', $tahunAjaran)
+            ->selectRaw('kelas_id, count(*) as total')
+            ->groupBy('kelas_id')
+            ->pluck('total', 'kelas_id');
+
         $this->kelasRecap = Kelas::where('tahun_ajaran', $tahunAjaran)
-            ->with(['waliKelas', 'murids'])
+            ->with(['waliKelas'])
             ->orderBy('nama_kelas')
             ->get()
             ->map(fn ($k) => [
-                'nama'         => $k->nama_kelas,
-                'kode'         => $k->kode_kelas,
+                'nama' => $k->nama_kelas,
+                'kode' => $k->kode_kelas,
                 'tahun_ajaran' => $k->tahun_ajaran,
-                'wali_kelas'   => $k->waliKelas?->nama_lengkap ?? 'Belum ditentukan',
-                'jumlah_murid' => $k->murids()->wherePivot('tahun_ajaran', $tahunAjaran)->count(),
+                'wali_kelas' => $k->waliKelas?->nama_lengkap ?? 'Belum ditentukan',
+                'jumlah_murid' => $muridCounts[$k->id] ?? 0,
             ])
             ->toArray();
     }
 
     // ── Tingkat kehadiran mingguan (Senin–Jumat minggu ini) ───────────────────
+    // Menggunakan max 2 query untuk seluruh minggu (1 pertemuan + 1 absensi).
 
     private function loadWeeklyAttendance($user): void {
         $monday = Carbon::now()->startOfWeek(Carbon::MONDAY);
-        $days   = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+        $friday = $monday->copy()->addDays(4);
+        $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
 
-        $this->weeklyAttendance = [];
+        // ── Query 1: semua pertemuan minggu ini (1 query) ─────────────────────
+        $pertemuanQuery = PertemuanKelas::whereBetween('tanggal_pertemuan', [
+            $monday->toDateString(),
+            $friday->toDateString(),
+        ])->select('id', 'tanggal_pertemuan');
 
-        for ($i = 0; $i < 5; $i++) {
-            $date = $monday->copy()->addDays($i)->toDateString();
-
-            // Ambil id pertemuan_kelas pada tanggal tersebut, filter by role
-            $pertemuanQuery = PertemuanKelas::whereDate('tanggal_pertemuan', $date);
-
-            if ($user?->role === 'guru') {
-                $guruId = $user->profilGuru?->id;
-                if ($guruId) {
-                    $pertemuanQuery->whereHas(
-                        'teachingSchedule',
-                        fn ($q) => $q->where('guru_id', $guruId)
-                    );
-                }
-            } elseif ($user?->role === 'murid') {
-                $profil = $user->profilMurid;
-                if ($profil) {
-                    // Cari kelas aktif murid
-                    $kelasId = $profil->kelas()->latest('kelas_murid.id')->first()?->id;
-                    if ($kelasId) {
-                        $pertemuanQuery->whereHas(
-                            'teachingSchedule',
-                            fn ($q) => $q->where('kelas_id', $kelasId)
-                        );
-                    }
-                }
+        if ($user?->role === 'guru') {
+            $guruId = $user->profilGuru?->id;
+            if ($guruId) {
+                $pertemuanQuery->whereHas(
+                    'teachingSchedule',
+                    fn ($q) => $q->where('guru_id', $guruId)
+                );
             }
-
-            $pertemuanIds = $pertemuanQuery->pluck('id');
-
-            if ($pertemuanIds->isEmpty()) {
-                $this->weeklyAttendance[] = [
-                    'day'        => $days[$i],
-                    'date'       => $date,
-                    'percentage' => null,   // tidak ada sesi = tidak ada data
-                    'hadir'      => 0,
-                    'total'      => 0,
-                ];
-                continue;
+        } elseif ($user?->role === 'murid') {
+            $kelasId = $user->profilMurid?->kelas()->latest('kelas_murid.id')->first()?->id;
+            if ($kelasId) {
+                $pertemuanQuery->whereHas(
+                    'teachingSchedule',
+                    fn ($q) => $q->where('kelas_id', $kelasId)
+                );
             }
+        }
 
-            // Untuk murid: cek kehadiran pribadinya saja
-            $absensiQuery = Absensi::whereIn('pertemuan_kelas_id', $pertemuanIds);
+        $pertemuanRows = $pertemuanQuery->get();
+        $allPertemuanIds = $pertemuanRows->pluck('id');
+
+        // Group by date string for easy lookup
+        $pertemuanByDate = $pertemuanRows->groupBy(
+            fn ($p) => Carbon::parse($p->tanggal_pertemuan)->format('Y-m-d')
+        );
+
+        // ── Query 2: semua absensi untuk seluruh pertemuan minggu ini (1 query)
+        $absensiRows = collect();
+        if ($allPertemuanIds->isNotEmpty()) {
+            $absensiQuery = Absensi::whereIn('pertemuan_kelas_id', $allPertemuanIds)
+                ->select('pertemuan_kelas_id', 'status_kehadiran');
+
             if ($user?->role === 'murid' && ($muridId = $user->profilMurid?->id)) {
                 $absensiQuery->where('murid_id', $muridId);
             }
 
-            $total = (clone $absensiQuery)->count();
-            $hadir = (clone $absensiQuery)->where('status_kehadiran', 'Hadir')->count();
+            $absensiRows = $absensiQuery->get();
+        }
+
+        $absensiByPertemuan = $absensiRows->groupBy('pertemuan_kelas_id');
+
+        // ── Hitung persentase per hari dari data in-memory ────────────────────
+        for ($i = 0; $i < 5; $i++) {
+            $date = $monday->copy()->addDays($i)->toDateString();
+            $ids = $pertemuanByDate->get($date, collect())->pluck('id');
+
+            if ($ids->isEmpty()) {
+                $this->weeklyAttendance[] = [
+                    'day' => $days[$i],
+                    'date' => $date,
+                    'percentage' => null,
+                    'hadir' => 0,
+                    'total' => 0,
+                ];
+
+                continue;
+            }
+
+            $dayAbsensi = $ids->flatMap(fn ($id) => $absensiByPertemuan->get($id, collect()));
+            $total = $dayAbsensi->count();
+            $hadir = $dayAbsensi->where('status_kehadiran', 'Hadir')->count();
 
             $this->weeklyAttendance[] = [
-                'day'        => $days[$i],
-                'date'       => $date,
+                'day' => $days[$i],
+                'date' => $date,
                 'percentage' => $total > 0 ? (int) round($hadir / $total * 100) : null,
-                'hadir'      => $hadir,
-                'total'      => $total,
+                'hadir' => $hadir,
+                'total' => $total,
             ];
         }
     }
@@ -270,10 +300,10 @@ class Dashboard extends Component {
     // ── Helper ────────────────────────────────────────────────────────────────
 
     private function currentTahunAjaran(): string {
-        $year  = (int) now()->format('Y');
+        $year = (int) now()->format('Y');
         $month = (int) now()->format('m');
 
-        return $month >= 7 ? $year . '/' . ($year + 1) : ($year - 1) . '/' . $year;
+        return $month >= 7 ? $year.'/'.($year + 1) : ($year - 1).'/'.$year;
     }
 
     public function render() {

@@ -25,7 +25,7 @@ class Nilai extends Model {
     ];
 
     protected $casts = [
-        'nilai'    => 'integer',
+        'nilai' => 'integer',
         'semester' => 'integer',
     ];
 

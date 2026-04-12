@@ -18,17 +18,22 @@ use Livewire\WithPagination;
 class ManageUser extends Component {
     use WithPagination;
 
-    public string $search       = '';
+    public string $search = '';
+
     public string $selectedRole = 'all';
 
     // --- Modal state ---
-    public bool  $showModal  = false;
-    public ?int  $editingId  = null;
+    public bool $showModal = false;
+
+    public ?int $editingId = null;
 
     // --- Form fields ---
-    public string $form_name     = '';
-    public string $form_email    = '';
-    public string $form_role     = 'murid';
+    public string $form_name = '';
+
+    public string $form_email = '';
+
+    public string $form_role = 'murid';
+
     public string $form_password = '';
 
     public function mount(): void {
@@ -56,24 +61,24 @@ class ManageUser extends Component {
     public function openEditForm(int $id): void {
         $user = User::findOrFail($id);
 
-        $this->editingId   = $id;
-        $this->form_name   = $user->name;
-        $this->form_email  = $user->email;
-        $this->form_role   = $user->role;
+        $this->editingId = $id;
+        $this->form_name = $user->name;
+        $this->form_email = $user->email;
+        $this->form_role = $user->role;
         $this->form_password = '';
-        $this->showModal   = true;
+        $this->showModal = true;
     }
 
     public function saveUser(): void {
         $rules = [
-            'form_name'  => ['required', 'string', 'max:255'],
+            'form_name' => ['required', 'string', 'max:255'],
             'form_email' => ['required', 'email', 'max:255',
                 Rule::unique('users', 'email')->ignore($this->editingId),
             ],
-            'form_role'  => ['required', 'in:admin,guru,murid'],
+            'form_role' => ['required', 'in:admin,guru,murid'],
         ];
 
-        if (! $this->editingId) {
+        if (!$this->editingId) {
             $rules['form_password'] = ['required', 'string', 'min:8'];
         } else {
             $rules['form_password'] = ['nullable', 'string', 'min:8'];
@@ -82,9 +87,9 @@ class ManageUser extends Component {
         $this->validate($rules);
 
         $data = [
-            'name'  => $this->form_name,
+            'name' => $this->form_name,
             'email' => $this->form_email,
-            'role'  => $this->form_role,
+            'role' => $this->form_role,
         ];
 
         if ($this->form_password !== '') {
@@ -107,6 +112,7 @@ class ManageUser extends Component {
     public function deleteUser(int $id): void {
         if ($id === Auth::id()) {
             session()->flash('user_error', 'Tidak dapat menghapus akun sendiri.');
+
             return;
         }
 
@@ -123,11 +129,11 @@ class ManageUser extends Component {
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private function resetForm(): void {
-        $this->form_name     = '';
-        $this->form_email    = '';
-        $this->form_role     = 'murid';
+        $this->form_name = '';
+        $this->form_email = '';
+        $this->form_role = 'murid';
         $this->form_password = '';
-        $this->editingId     = null;
+        $this->editingId = null;
     }
 
     public function render() {

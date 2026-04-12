@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 require __DIR__.'/vendor/autoload.php';
 $app = require_once __DIR__.'/bootstrap/app.php';
-$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+$app->make(Kernel::class)->bootstrap();
 
+use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\DB;
 
 try {
@@ -28,7 +31,7 @@ try {
 
     DB::commit();
     echo "RESET AND FIX SUCCESSFUL.\n";
-} catch (\Exception $e) {
+} catch (Exception $e) {
     DB::rollBack();
-    echo "ERROR: " . $e->getMessage() . "\n";
+    echo "ERROR: ".$e->getMessage()."\n";
 }

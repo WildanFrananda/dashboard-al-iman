@@ -51,12 +51,14 @@ expect()->extend('toBeLulus', function () {
 expect()->extend('toHaveValidHexColor', function () {
     $value = is_object($this->value) ? $this->value->color ?? $this->value : $this->value;
     expect(preg_match('/^#[0-9A-Fa-f]{6}$/', (string) $value))->toBe(1);
+
     return $this;
 });
 
 expect()->extend('toBeValidNilai', function () {
     $value = $this->value;
     expect($value)->toBeGreaterThanOrEqual(0)->toBeLessThanOrEqual(100);
+
     return $this;
 });
 
@@ -93,42 +95,41 @@ dataset('non_admin_roles', [['murid'], ['guru']]);
 /**
  * Buat user admin dan langsung actingAs.
  */
-function loginAsAdmin(): User
-{
+function loginAsAdmin(): User {
     $user = User::factory()->admin()->create();
     test()->actingAs($user);
+
     return $user;
 }
 
 /**
  * Buat user guru dengan ProfilGuru dan langsung actingAs.
  */
-function loginAsGuru(): array
-{
-    $user  = User::factory()->guru()->create();
+function loginAsGuru(): array {
+    $user = User::factory()->guru()->create();
     $profil = ProfilGuru::factory()->create(['user_id' => $user->id]);
     test()->actingAs($user);
+
     return ['user' => $user, 'profil' => $profil];
 }
 
 /**
  * Buat user murid dengan ProfilMurid dan langsung actingAs.
  */
-function loginAsMurid(): array
-{
-    $user  = User::factory()->murid()->create();
+function loginAsMurid(): array {
+    $user = User::factory()->murid()->create();
     $profil = ProfilMurid::factory()->create(['user_id' => $user->id]);
     test()->actingAs($user);
+
     return ['user' => $user, 'profil' => $profil];
 }
 
 /**
  * Buat kelas lengkap dengan sejumlah murid terpasang.
  */
-function createKelasWithStudents(int $count = 3, string $tahunAjaran = '2025/2026'): array
-{
-    $kelas   = Kelas::factory()->create(['tahun_ajaran' => $tahunAjaran]);
-    $murids  = ProfilMurid::factory()->count($count)->create();
+function createKelasWithStudents(int $count = 3, string $tahunAjaran = '2025/2026'): array {
+    $kelas = Kelas::factory()->create(['tahun_ajaran' => $tahunAjaran]);
+    $murids = ProfilMurid::factory()->count($count)->create();
 
     foreach ($murids as $murid) {
         $kelas->murids()->attach($murid->id, ['tahun_ajaran' => $tahunAjaran]);

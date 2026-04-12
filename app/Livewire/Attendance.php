@@ -19,17 +19,17 @@ class Attendance extends Component {
 
     private const STATUS_MAP = [
         'Hadir' => 'H',
-        'Izin'  => 'I',
+        'Izin' => 'I',
         'Sakit' => 'S',
-        'Alpa'  => 'A',
+        'Alpa' => 'A',
     ];
 
     public function mount(): void {
-        $user  = Auth::user();
+        $user = Auth::user();
         $murid = $user?->profilMurid;
 
-        if (! $murid) {
-            $this->summary          = ['hadir' => 0, 'izin' => 0, 'sakit' => 0, 'alfa' => 0];
+        if (!$murid) {
+            $this->summary = ['hadir' => 0, 'izin' => 0, 'sakit' => 0, 'alfa' => 0];
             $this->attendanceRecords = [];
 
             return;
@@ -46,9 +46,9 @@ class Attendance extends Component {
         // --- Summary cards ---
         $this->summary = [
             'hadir' => $absensiList->where('status_kehadiran', 'Hadir')->count(),
-            'izin'  => $absensiList->where('status_kehadiran', 'Izin')->count(),
+            'izin' => $absensiList->where('status_kehadiran', 'Izin')->count(),
             'sakit' => $absensiList->where('status_kehadiran', 'Sakit')->count(),
-            'alfa'  => $absensiList->where('status_kehadiran', 'Alpa')->count(),
+            'alfa' => $absensiList->where('status_kehadiran', 'Alpa')->count(),
         ];
 
         // --- Group by subject & build history badges ---
@@ -60,13 +60,13 @@ class Attendance extends Component {
 
         $records = [];
         foreach ($grouped as $subjectName => $items) {
-            $history    = [];
+            $history = [];
             $meetNumber = 1;
 
             foreach ($items as $absensi) {
                 $history[] = [
-                    'meet'    => $meetNumber++,
-                    'status'  => self::STATUS_MAP[$absensi->status_kehadiran] ?? '?',
+                    'meet' => $meetNumber++,
+                    'status' => self::STATUS_MAP[$absensi->status_kehadiran] ?? '?',
                     'tanggal' => optional($absensi->pertemuanKelas)->tanggal_pertemuan,
                 ];
             }

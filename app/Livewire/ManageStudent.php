@@ -20,22 +20,33 @@ class ManageStudent extends Component {
     use WithPagination;
 
     public $search = '';
+
     public $selectedStatus = 'all';
+
     public $selectedYear = '';
 
     // Form fields
     public $name = '';
+
     public $email = '';
+
     public $password = '';
+
     public $nis = '';
+
     public $nama_lengkap = '';
+
     public $status = 'aktif';
+
     public $kelas_id = null;
+
     public $tahun_ajaran = '';
 
     // Edit state
     public $editingId = null; // ProfilMurid ID
+
     public $showForm = false;
+
     public $confirmingDelete = null;
 
     protected $queryString = ['search', 'selectedStatus'];
@@ -76,8 +87,8 @@ class ManageStudent extends Component {
     public function save() {
         $rules = [
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . ($this->editingId ? ProfilMurid::find($this->editingId)->user_id : ''),
-            'nis' => 'required|string|unique:profil_murid,nis,' . $this->editingId,
+            'email' => 'required|email|unique:users,email,'.($this->editingId ? ProfilMurid::find($this->editingId)->user_id : ''),
+            'nis' => 'required|string|unique:profil_murid,nis,'.$this->editingId,
             'nama_lengkap' => 'required|string|max:255',
             'status' => 'required|in:aktif,lulus,pindah,keluar',
         ];
@@ -111,7 +122,7 @@ class ManageStudent extends Component {
                 // Update class if changed (manual assignment)
                 if ($this->kelas_id) {
                     $profil->kelas()->syncWithoutDetaching([
-                        $this->kelas_id => ['tahun_ajaran' => $this->tahun_ajaran]
+                        $this->kelas_id => ['tahun_ajaran' => $this->tahun_ajaran],
                     ]);
                 }
             } else {
@@ -137,13 +148,13 @@ class ManageStudent extends Component {
             $this->closeForm();
         } catch (\Exception $e) {
             DB::rollBack();
-            session()->flash('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            session()->flash('error', 'Terjadi kesalahan: '.$e->getMessage());
         }
     }
 
     public function delete(int $id): void {
         $profil = ProfilMurid::with('user')->findOrFail($id);
-        $user   = $profil->user;
+        $user = $profil->user;
         $profil->delete();
         if ($user) {
             $user->delete();
@@ -159,7 +170,7 @@ class ManageStudent extends Component {
         $this->nis = $profil->nis;
         $this->nama_lengkap = $profil->nama_lengkap;
         $this->status = $profil->status;
-        
+
         $currentKelas = $profil->kelas()->wherePivot('tahun_ajaran', $this->tahun_ajaran)->first();
         $this->kelas_id = $currentKelas ? $currentKelas->id : null;
 
@@ -168,7 +179,7 @@ class ManageStudent extends Component {
 
     public function render() {
         $students = ProfilMurid::query()
-            ->with(['user', 'kelas' => function($q) {
+            ->with(['user', 'kelas' => function ($q) {
                 $q->wherePivot('tahun_ajaran', $this->selectedYear);
             }])
             ->when($this->search, function ($query) {
@@ -188,7 +199,7 @@ class ManageStudent extends Component {
         $availableYears = DB::table('kelas_murid')->distinct()->pluck('tahun_ajaran')->toArray();
         // Ensure current year and potential next year are in the list
         $availableYears[] = $this->tahun_ajaran;
-        $nextYear = ((int)substr($this->tahun_ajaran, 0, 4) + 1) . '/' . ((int)substr($this->tahun_ajaran, 5, 4) + 1);
+        $nextYear = ((int) substr($this->tahun_ajaran, 0, 4) + 1).'/'.((int) substr($this->tahun_ajaran, 5, 4) + 1);
         $availableYears[] = $nextYear;
         $availableYears = array_unique($availableYears);
         rsort($availableYears);

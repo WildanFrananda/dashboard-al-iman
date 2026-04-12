@@ -5,14 +5,13 @@ declare(strict_types=1);
 use App\Livewire\ManageGrade;
 use App\Models\Kelas;
 use App\Models\Nilai;
-use App\Models\ProfilGuru;
 use App\Models\ProfilMurid;
 use App\Models\Subject;
 use App\Models\TeachingSchedule;
 
 beforeEach(function () {
     $this->guruData = loginAsGuru();
-    $this->guru     = $this->guruData['profil'];
+    $this->guru = $this->guruData['profil'];
 });
 
 describe('ManageGrade — validation', function () {
@@ -53,11 +52,11 @@ describe('ManageGrade — validation', function () {
 describe('ManageGrade — submission', function () {
     it('saves valid grades for students', function () {
         $subject = Subject::factory()->create();
-        $kelas   = Kelas::factory()->create();
+        $kelas = Kelas::factory()->create();
         $schedule = TeachingSchedule::factory()->create([
-            'guru_id'    => $this->guru->id,
+            'guru_id' => $this->guru->id,
             'subject_id' => $subject->id,
-            'kelas_id'   => $kelas->id,
+            'kelas_id' => $kelas->id,
         ]);
         $murid = ProfilMurid::factory()->create();
         $kelas->murids()->attach($murid->id, ['tahun_ajaran' => $schedule->kelas->tahun_ajaran]);
@@ -77,11 +76,11 @@ describe('ManageGrade — submission', function () {
 
     it('skips saving when nilai field is empty', function () {
         $subject = Subject::factory()->create();
-        $kelas   = Kelas::factory()->create();
+        $kelas = Kelas::factory()->create();
         $schedule = TeachingSchedule::factory()->create([
-            'guru_id'    => $this->guru->id,
+            'guru_id' => $this->guru->id,
             'subject_id' => $subject->id,
-            'kelas_id'   => $kelas->id,
+            'kelas_id' => $kelas->id,
         ]);
         $murid = ProfilMurid::factory()->create();
         $kelas->murids()->attach($murid->id, ['tahun_ajaran' => $schedule->kelas->tahun_ajaran]);

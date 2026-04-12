@@ -1,12 +1,13 @@
 <?php
 
 declare(strict_types=1);
+use App\Livewire\ManageUser;
 
 it('rejects POST to login without CSRF token', function () {
     // withoutMiddleware(['web']) agar CSRF aktif
     $response = $this->withMiddleware()
         ->post('/login', [
-            'email'    => 'test@example.com',
+            'email' => 'test@example.com',
             'password' => 'password',
         ]);
 
@@ -19,6 +20,6 @@ it('Livewire requests include CSRF protection automatically', function () {
 
     // Livewire secara internal mengelola CSRF via X-Livewire-Token header
     // Verifikasi bahwa request Livewire tidak ditolak dengan 419
-    $response = Livewire\Livewire::test(\App\Livewire\ManageUser::class);
+    $response = Livewire\Livewire::test(ManageUser::class);
     expect($response)->assertOk();
 });

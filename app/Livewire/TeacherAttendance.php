@@ -43,12 +43,12 @@ class TeacherAttendance extends Component {
     public function mount(): void {
         $user = Auth::user();
 
-        if (! $user || $user->role !== 'guru' || ! $user->profilGuru) {
+        if (!$user || $user->role !== 'guru' || !$user->profilGuru) {
             abort(403, 'Hanya pengajar yang dapat mengakses halaman ini.');
         }
 
         $this->teacherName = $user->profilGuru->nama_lengkap;
-        $this->date        = now()->format('Y-m-d');
+        $this->date = now()->format('Y-m-d');
     }
 
     public function updatedScheduleId(): void {
@@ -60,10 +60,10 @@ class TeacherAttendance extends Component {
     }
 
     public function loadStudents(): void {
-        $this->students   = [];
+        $this->students = [];
         $this->attendances = [];
 
-        if (! $this->scheduleId || ! $this->date) {
+        if (!$this->scheduleId || !$this->date) {
             return;
         }
 
@@ -73,7 +73,7 @@ class TeacherAttendance extends Component {
             ->with('kelas.murids')
             ->first();
 
-        if (! $schedule || ! $schedule->kelas) {
+        if (!$schedule || !$schedule->kelas) {
             return;
         }
 
@@ -83,7 +83,7 @@ class TeacherAttendance extends Component {
 
         $existingAbsensi = [];
         if ($pertemuan) {
-            $existingAbsensi  = Absensi::where('pertemuan_kelas_id', $pertemuan->id)
+            $existingAbsensi = Absensi::where('pertemuan_kelas_id', $pertemuan->id)
                 ->pluck('status_kehadiran', 'murid_id')
                 ->toArray();
             $this->materi = $pertemuan->materi ?? '';
@@ -91,7 +91,7 @@ class TeacherAttendance extends Component {
 
         foreach ($schedule->kelas->murids as $murid) {
             $this->students[] = [
-                'id'   => $murid->id,
+                'id' => $murid->id,
                 'name' => $murid->nama_lengkap,
             ];
 
@@ -101,10 +101,10 @@ class TeacherAttendance extends Component {
 
     public function submit(): void {
         $this->validate([
-            'scheduleId'     => 'required|exists:teaching_schedules,id',
-            'date'           => 'required|date_format:Y-m-d',
-            'materi'         => 'nullable|string|max:500',
-            'attendances.*'  => 'required|in:Hadir,Izin,Sakit,Alpa',
+            'scheduleId' => 'required|exists:teaching_schedules,id',
+            'date' => 'required|date_format:Y-m-d',
+            'materi' => 'nullable|string|max:500',
+            'attendances.*' => 'required|in:Hadir,Izin,Sakit,Alpa',
         ]);
 
         // Security: verifikasi kepemilikan jadwal
@@ -112,7 +112,7 @@ class TeacherAttendance extends Component {
             ->where('guru_id', Auth::user()->profilGuru->id)
             ->first();
 
-        if (! $schedule) {
+        if (!$schedule) {
             session()->flash('error', 'Anda tidak memiliki akses ke jadwal ini.');
 
             return;
@@ -129,28 +129,28 @@ class TeacherAttendance extends Component {
         $pertemuan = PertemuanKelas::firstOrCreate(
             [
                 'teaching_schedule_id' => $this->scheduleId,
-                'tanggal_pertemuan'    => $formattedDate,
+                'tanggal_pertemuan' => $formattedDate,
             ],
             ['materi' => $this->materi ?: 'Pertemuan Reguler']
         );
 
         // Jika pertemuan sudah ada, update materi jika diisi
-        if (! $pertemuan->wasRecentlyCreated && $this->materi) {
+        if (!$pertemuan->wasRecentlyCreated && $this->materi) {
             $pertemuan->update(['materi' => $this->materi]);
         }
 
         foreach ($this->students as $student) {
-            $studentId  = $student['id'];
+            $studentId = $student['id'];
             $dbStatus = $this->attendances[$studentId] ?? 'Hadir';
 
             Absensi::updateOrCreate(
                 [
                     'pertemuan_kelas_id' => $pertemuan->id,
-                    'murid_id'           => $studentId,
+                    'murid_id' => $studentId,
                 ],
                 [
                     'status_kehadiran' => $dbStatus,
-                    'waktu_absen'      => now(),
+                    'waktu_absen' => now(),
                 ]
             );
         }

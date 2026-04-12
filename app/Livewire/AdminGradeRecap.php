@@ -16,20 +16,23 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 #[Title('Rekap Nilai - SIAKMAN')]
 class AdminGradeRecap extends Component {
-    public string $kelasId     = '';
-    public int    $semester    = 1;
+    public string $kelasId = '';
+
+    public int $semester = 1;
+
     public string $tahunAjaran = '';
 
     public function mount(): void {
         $user = Auth::user();
 
-        if (! $user || ! in_array($user->role, ['admin', 'guru'], true)) {
+        if (!$user || !in_array($user->role, ['admin', 'guru'], true)) {
             redirect()->route('dashboard');
+
             return;
         }
 
-        $month             = (int) now()->format('m');
-        $this->semester    = $month >= 7 ? 1 : 2;
+        $month = (int) now()->format('m');
+        $this->semester = $month >= 7 ? 1 : 2;
         $this->tahunAjaran = $this->currentTahunAjaran();
     }
 
@@ -79,19 +82,19 @@ class AdminGradeRecap extends Component {
 
                 $subjectRows[] = [
                     'subject' => $nilais->first()->subject?->subject_name ?? '-',
-                    'uts'     => $uts?->nilai,
-                    'uas'     => $uas?->nilai,
+                    'uts' => $uts?->nilai,
+                    'uas' => $uas?->nilai,
                 ];
             }
 
             $kelas = $murid->kelas->last();
 
             $rows[] = [
-                'nis'        => $murid->nis,
-                'nama'       => $murid->nama_lengkap,
-                'kelas'      => $kelas?->nama_kelas ?? '-',
-                'subjects'   => $subjectRows,
-                'has_nilai'  => $muridNilais->isNotEmpty(),
+                'nis' => $murid->nis,
+                'nama' => $murid->nama_lengkap,
+                'kelas' => $kelas?->nama_kelas ?? '-',
+                'subjects' => $subjectRows,
+                'has_nilai' => $muridNilais->isNotEmpty(),
             ];
         }
 
@@ -99,7 +102,7 @@ class AdminGradeRecap extends Component {
     }
 
     private function currentTahunAjaran(): string {
-        $year  = (int) now()->format('Y');
+        $year = (int) now()->format('Y');
         $month = (int) now()->format('m');
 
         return $month >= 7 ? $year.'/'.($year + 1) : ($year - 1).'/'.$year;

@@ -51,9 +51,9 @@ test('password can be reset with valid token', function () {
     Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
         $response = $this->withoutMiddleware(ValidateCsrfToken::class)
             ->post(route('password.update'), [
-                'token'                 => $notification->token,
-                'email'                 => $user->email,
-                'password'              => 'password',
+                'token' => $notification->token,
+                'email' => $user->email,
+                'password' => 'password',
                 'password_confirmation' => 'password',
             ]);
 

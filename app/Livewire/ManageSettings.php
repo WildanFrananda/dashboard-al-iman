@@ -13,13 +13,14 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 #[Title('Pengaturan Sekolah - SIAKMAN')]
 class ManageSettings extends Component {
-    public string $jumlah_ekskul       = '';
-    public string $tingkat_akreditasi  = '';
+    public string $jumlah_ekskul = '';
+
+    public string $tingkat_akreditasi = '';
 
     public function mount(): void {
         $this->authorizeAdmin();
 
-        $this->jumlah_ekskul      = SchoolSetting::get('jumlah_ekskul', '0');
+        $this->jumlah_ekskul = SchoolSetting::get('jumlah_ekskul', '0');
         $this->tingkat_akreditasi = SchoolSetting::get('tingkat_akreditasi', '-');
     }
 
@@ -27,12 +28,12 @@ class ManageSettings extends Component {
         $this->authorizeAdmin();
 
         $this->validate([
-            'jumlah_ekskul'      => ['required', 'integer', 'min:0', 'max:999'],
+            'jumlah_ekskul' => ['required', 'integer', 'min:0', 'max:999'],
             'tingkat_akreditasi' => ['required', 'string', 'max:10'],
         ]);
 
-        SchoolSetting::set('jumlah_ekskul',      $this->jumlah_ekskul);
-        SchoolSetting::set('tingkat_akreditasi',  $this->tingkat_akreditasi);
+        SchoolSetting::set('jumlah_ekskul', $this->jumlah_ekskul);
+        SchoolSetting::set('tingkat_akreditasi', $this->tingkat_akreditasi);
 
         session()->flash('settings_message', 'Pengaturan berhasil disimpan.');
     }
@@ -40,6 +41,7 @@ class ManageSettings extends Component {
     private function authorizeAdmin(): void {
         if (Auth::user()?->role !== 'admin') {
             redirect()->route('dashboard');
+
             return;
         }
     }

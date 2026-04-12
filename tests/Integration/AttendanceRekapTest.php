@@ -3,29 +3,28 @@
 declare(strict_types=1);
 
 use App\Models\Absensi;
-use App\Models\Kelas;
 use App\Models\PertemuanKelas;
 use App\Models\ProfilMurid;
 use App\Models\TeachingSchedule;
 
 describe('Attendance rekap computation', function () {
     it('correctly counts hadir from absensi records', function () {
-        $murid    = ProfilMurid::factory()->create();
+        $murid = ProfilMurid::factory()->create();
         $schedule = TeachingSchedule::factory()->create();
         $pertemuan = PertemuanKelas::factory()->create([
             'teaching_schedule_id' => $schedule->id,
-            'tanggal_pertemuan'    => now()->format('Y-m-d'),
+            'tanggal_pertemuan' => now()->format('Y-m-d'),
         ]);
 
         Absensi::factory()->count(8)->create([
             'pertemuan_kelas_id' => $pertemuan->id,
-            'murid_id'           => $murid->id,
-            'status_kehadiran'   => 'Hadir',
+            'murid_id' => $murid->id,
+            'status_kehadiran' => 'Hadir',
         ]);
         Absensi::factory()->count(2)->create([
             'pertemuan_kelas_id' => $pertemuan->id,
-            'murid_id'           => $murid->id,
-            'status_kehadiran'   => 'Alpa',
+            'murid_id' => $murid->id,
+            'status_kehadiran' => 'Alpa',
         ]);
 
         $hadir = Absensi::where('murid_id', $murid->id)

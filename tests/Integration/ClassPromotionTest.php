@@ -12,7 +12,7 @@ describe('processPromotion', function () {
         $this->admin = User::factory()->admin()->create();
         $this->actingAs($this->admin);
         $this->currentYear = '2024/2025';
-        $this->nextYear    = '2025/2026';
+        $this->nextYear = '2025/2026';
     });
 
     it('promotes student from level 5 to level 6 in new academic year', function () {

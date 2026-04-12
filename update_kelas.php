@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 require __DIR__.'/vendor/autoload.php';
 $app = require_once __DIR__.'/bootstrap/app.php';
-$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+$app->make(Kernel::class)->bootstrap();
 
 use App\Models\Kelas;
+use Illuminate\Contracts\Console\Kernel;
 
 Kelas::all()->each(function ($k) {
     if (preg_match('/Kelas (\d+)([A-Z]?)/', $k->nama_kelas, $m)) {

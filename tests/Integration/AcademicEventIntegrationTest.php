@@ -24,7 +24,7 @@ describe('AcademicEvent DB operations', function () {
     it('scopeUpcoming includes ongoing multi-day events', function () {
         AcademicEvent::factory()->create([
             'start_date' => now()->subDay()->format('Y-m-d'),
-            'end_date'   => now()->addDay()->format('Y-m-d'),
+            'end_date' => now()->addDay()->format('Y-m-d'),
         ]);
 
         expect(AcademicEvent::upcoming()->get())->toHaveCount(1);

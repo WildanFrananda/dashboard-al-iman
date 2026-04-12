@@ -16,7 +16,7 @@ test('users can authenticate using the login screen', function () {
 
     $response = $this->withoutMiddleware(ValidateCsrfToken::class)
         ->post(route('login.store'), [
-            'email'    => $user->email,
+            'email' => $user->email,
             'password' => 'password',
         ]);
 
@@ -32,7 +32,7 @@ test('users can not authenticate with invalid password', function () {
 
     $response = $this->withoutMiddleware(ValidateCsrfToken::class)
         ->post(route('login.store'), [
-            'email'    => $user->email,
+            'email' => $user->email,
             'password' => 'wrong-password',
         ]);
 

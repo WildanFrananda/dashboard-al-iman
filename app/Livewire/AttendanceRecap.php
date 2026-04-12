@@ -16,15 +16,18 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 #[Title('Rekap Absensi - SIAKMAN')]
 class AttendanceRecap extends Component {
-    public int    $bulan   = 0;
-    public int    $tahun   = 0;
+    public int $bulan = 0;
+
+    public int $tahun = 0;
+
     public string $kelasId = '';
 
     public function mount(): void {
         $user = Auth::user();
 
-        if (! $user || ! in_array($user->role, ['guru', 'admin'], true)) {
+        if (!$user || !in_array($user->role, ['guru', 'admin'], true)) {
             redirect()->route('dashboard');
+
             return;
         }
 
@@ -60,7 +63,7 @@ class AttendanceRecap extends Component {
             ->whereHas(
                 'pertemuanKelas',
                 fn ($q) => $q->whereYear('tanggal_pertemuan', $this->tahun)
-                             ->whereMonth('tanggal_pertemuan', $this->bulan)
+                    ->whereMonth('tanggal_pertemuan', $this->bulan)
             )
             ->with('pertemuanKelas')
             ->get()
@@ -71,9 +74,9 @@ class AttendanceRecap extends Component {
             $absensiMurid = $allAbsensi->get($murid->id, collect());
 
             $hadir = $absensiMurid->where('status_kehadiran', 'Hadir')->count();
-            $izin  = $absensiMurid->where('status_kehadiran', 'Izin')->count();
+            $izin = $absensiMurid->where('status_kehadiran', 'Izin')->count();
             $sakit = $absensiMurid->where('status_kehadiran', 'Sakit')->count();
-            $alpa  = $absensiMurid->where('status_kehadiran', 'Alpa')->count();
+            $alpa = $absensiMurid->where('status_kehadiran', 'Alpa')->count();
             $total = $absensiMurid->count();
 
             $persentase = $total > 0
@@ -84,15 +87,15 @@ class AttendanceRecap extends Component {
             $namaKelas = $murid->kelas->last()?->nama_kelas ?? '-';
 
             $rows[] = [
-                'nis'         => $murid->nis,
-                'nama'        => $murid->nama_lengkap,
-                'kelas'       => $namaKelas,
-                'hadir'       => $hadir,
-                'izin'        => $izin,
-                'sakit'       => $sakit,
-                'alpa'        => $alpa,
-                'total'       => $total,
-                'persentase'  => $persentase,
+                'nis' => $murid->nis,
+                'nama' => $murid->nama_lengkap,
+                'kelas' => $namaKelas,
+                'hadir' => $hadir,
+                'izin' => $izin,
+                'sakit' => $sakit,
+                'alpa' => $alpa,
+                'total' => $total,
+                'persentase' => $persentase,
             ];
         }
 
