@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Livewire\Attendance;
+use App\Livewire\AttendanceRecap;
 use App\Livewire\Auth\Login;
 use App\Livewire\CreateSubject;
 use App\Livewire\Dashboard;
@@ -33,6 +34,7 @@ Route::get('/login', Login::class)->name('login');
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
     Route::get('/attendance', Attendance::class)->name('attendance');
+    Route::get('/attendance-recap', AttendanceRecap::class)->name('attendance-recap');
     Route::get('/teacher-attendance', TeacherAttendance::class)->name('teacher-attendance');
     Route::get('/manage-user', ManageUser::class)->name('manage-user');
     Route::get('/manage-subject/create', CreateSubject::class)->name('create-subject');

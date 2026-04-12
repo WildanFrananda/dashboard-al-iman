@@ -7,6 +7,8 @@ namespace App\Livewire;
 use App\Models\Absensi;
 use App\Models\PertemuanKelas;
 use App\Models\TeachingSchedule;
+use Carbon\Carbon;
+use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -20,7 +22,10 @@ class TeacherAttendance extends Component {
 
     public string $scheduleId = '';
 
+    /** Format: Y-m-d (value dari date input type="date") */
     public string $date = '';
+
+    public string $materi = '';
 
     public array $students = [];
 
@@ -38,106 +43,117 @@ class TeacherAttendance extends Component {
     public function mount(): void {
         $user = Auth::user();
 
-        if (!$user || $user->role !== 'guru' || !$user->profilGuru) {
+        if (! $user || $user->role !== 'guru' || ! $user->profilGuru) {
             abort(403, 'Hanya pengajar yang dapat mengakses halaman ini.');
         }
 
         $this->teacherName = $user->profilGuru->nama_lengkap;
-        $this->date = date('d/m/Y');
+        $this->date        = now()->format('Y-m-d');
     }
 
-    // Otomatis dipanggil saat scheduleId berubah (wire:model.live)
     public function updatedScheduleId(): void {
         $this->loadStudents();
     }
 
-    // Otomatis dipanggil saat date berubah (wire:model.live.debounce)
     public function updatedDate(): void {
         $this->loadStudents();
     }
 
     public function loadStudents(): void {
-        $this->students = [];
+        $this->students   = [];
         $this->attendances = [];
 
-        if (!$this->scheduleId || !$this->date) {
+        if (! $this->scheduleId || ! $this->date) {
             return;
         }
 
-        $schedule = TeachingSchedule::with('kelas.murids')->find($this->scheduleId);
+        // Security: pastikan jadwal milik guru yang sedang login
+        $schedule = TeachingSchedule::where('id', $this->scheduleId)
+            ->where('guru_id', Auth::user()->profilGuru->id)
+            ->with('kelas.murids')
+            ->first();
 
-        if (!$schedule || !$schedule->kelas) {
+        if (! $schedule || ! $schedule->kelas) {
             return;
         }
-
-        $dateParts = explode('/', $this->date);
-        if (count($dateParts) !== 3) {
-            return;
-        }
-
-        $formattedDate = $dateParts[2].'-'.$dateParts[1].'-'.$dateParts[0];
 
         $pertemuan = PertemuanKelas::where('teaching_schedule_id', $schedule->id)
-            ->where('tanggal_pertemuan', $formattedDate)
+            ->where('tanggal_pertemuan', $this->date)
             ->first();
 
         $existingAbsensi = [];
         if ($pertemuan) {
-            $existingAbsensi = Absensi::where('pertemuan_kelas_id', $pertemuan->id)
+            $existingAbsensi  = Absensi::where('pertemuan_kelas_id', $pertemuan->id)
                 ->pluck('status_kehadiran', 'murid_id')
                 ->toArray();
+            $this->materi = $pertemuan->materi ?? '';
         }
 
         foreach ($schedule->kelas->murids as $murid) {
             $this->students[] = [
-                'id' => $murid->id,
+                'id'   => $murid->id,
                 'name' => $murid->nama_lengkap,
             ];
 
-            // KEY = murid id (bukan index) supaya $set dari blade tepat sasaran
             $this->attendances[$murid->id] = $existingAbsensi[$murid->id] ?? 'Hadir';
         }
     }
 
     public function submit(): void {
         $this->validate([
-            'scheduleId' => 'required',
-            'date' => 'required',
-            'attendances.*' => 'required|in:Hadir,Izin,Sakit,Alfa',
+            'scheduleId'     => 'required|exists:teaching_schedules,id',
+            'date'           => 'required|date_format:Y-m-d',
+            'materi'         => 'nullable|string|max:500',
+            'attendances.*'  => 'required|in:Hadir,Izin,Sakit,Alfa',
         ]);
 
-        $dateParts = explode('/', $this->date);
-        if (count($dateParts) !== 3) {
-            session()->flash('error', 'Format tanggal tidak valid (gunakan dd/mm/yyyy).');
+        // Security: verifikasi kepemilikan jadwal
+        $schedule = TeachingSchedule::where('id', $this->scheduleId)
+            ->where('guru_id', Auth::user()->profilGuru->id)
+            ->first();
+
+        if (! $schedule) {
+            session()->flash('error', 'Anda tidak memiliki akses ke jadwal ini.');
 
             return;
         }
 
-        $formattedDate = $dateParts[2].'-'.$dateParts[1].'-'.$dateParts[0];
+        try {
+            $formattedDate = Carbon::createFromFormat('Y-m-d', $this->date)->format('Y-m-d');
+        } catch (InvalidFormatException) {
+            session()->flash('error', 'Format tanggal tidak valid.');
+
+            return;
+        }
 
         $pertemuan = PertemuanKelas::firstOrCreate(
             [
                 'teaching_schedule_id' => $this->scheduleId,
-                'tanggal_pertemuan' => $formattedDate,
+                'tanggal_pertemuan'    => $formattedDate,
             ],
-            ['materi' => 'Pertemuan Reguler']
+            ['materi' => $this->materi ?: 'Pertemuan Reguler']
         );
 
+        // Jika pertemuan sudah ada, update materi jika diisi
+        if (! $pertemuan->wasRecentlyCreated && $this->materi) {
+            $pertemuan->update(['materi' => $this->materi]);
+        }
+
         foreach ($this->students as $student) {
-            $studentId = $student['id'];
+            $studentId  = $student['id'];
             $statusInput = $this->attendances[$studentId] ?? 'Hadir';
 
-            // Normalisasi: "Alfa" di UI disimpan sebagai "Alpa" di DB
+            // "Alfa" di UI → "Alpa" di DB
             $dbStatus = $statusInput === 'Alfa' ? 'Alpa' : $statusInput;
 
             Absensi::updateOrCreate(
                 [
                     'pertemuan_kelas_id' => $pertemuan->id,
-                    'murid_id' => $studentId,
+                    'murid_id'           => $studentId,
                 ],
                 [
                     'status_kehadiran' => $dbStatus,
-                    'waktu_absen' => now(),
+                    'waktu_absen'      => now(),
                 ]
             );
         }
