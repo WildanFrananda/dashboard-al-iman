@@ -18,7 +18,12 @@ it('shows only grades belonging to logged-in student', function () {
     $kelas   = Kelas::factory()->create();
     $guru    = ProfilGuru::factory()->create();
 
-    // Nilai untuk murid ini
+    // Compute semester & tahun_ajaran the same way the component does
+    $month       = (int) now()->format('m');
+    $year        = (int) now()->format('Y');
+    $semester    = $month >= 7 ? 1 : 2;
+    $tahunAjaran = $month >= 7 ? $year . '/' . ($year + 1) : ($year - 1) . '/' . $year;
+
     Nilai::factory()->create([
         'murid_id'    => $this->murid->id,
         'subject_id'  => $subject->id,
@@ -26,8 +31,8 @@ it('shows only grades belonging to logged-in student', function () {
         'kelas_id'    => $kelas->id,
         'tipe_nilai'  => 'UTS',
         'nilai'       => 90,
-        'semester'    => 1,
-        'tahun_ajaran' => date('Y') . '/' . (date('Y') + 1),
+        'semester'    => $semester,
+        'tahun_ajaran' => $tahunAjaran,
     ]);
 
     Livewire\Livewire::test(StudentGrade::class)

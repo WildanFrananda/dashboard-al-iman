@@ -12,8 +12,9 @@ describe('ManageSettings', function () {
     });
 
     it('loads current settings on mount', function () {
-        SchoolSetting::create(['key' => 'jumlah_ekskul',      'value' => '8',  'label' => 'Ekskul']);
-        SchoolSetting::create(['key' => 'tingkat_akreditasi', 'value' => 'A+', 'label' => 'Akreditasi']);
+        // Migration seeds default rows — update via set() instead of create()
+        SchoolSetting::set('jumlah_ekskul', '8');
+        SchoolSetting::set('tingkat_akreditasi', 'A+');
 
         loginAsAdmin();
 
@@ -23,8 +24,8 @@ describe('ManageSettings', function () {
     });
 
     it('saves updated settings to database', function () {
-        SchoolSetting::create(['key' => 'jumlah_ekskul',      'value' => '5',  'label' => 'Ekskul']);
-        SchoolSetting::create(['key' => 'tingkat_akreditasi', 'value' => 'A',  'label' => 'Akreditasi']);
+        SchoolSetting::set('jumlah_ekskul', '5');
+        SchoolSetting::set('tingkat_akreditasi', 'A');
 
         loginAsAdmin();
 
@@ -38,8 +39,8 @@ describe('ManageSettings', function () {
     });
 
     it('validates jumlah_ekskul must be an integer', function () {
-        SchoolSetting::create(['key' => 'jumlah_ekskul',      'value' => '5', 'label' => 'Ekskul']);
-        SchoolSetting::create(['key' => 'tingkat_akreditasi', 'value' => 'A', 'label' => 'Akreditasi']);
+        SchoolSetting::set('jumlah_ekskul', '5');
+        SchoolSetting::set('tingkat_akreditasi', 'A');
 
         loginAsAdmin();
 

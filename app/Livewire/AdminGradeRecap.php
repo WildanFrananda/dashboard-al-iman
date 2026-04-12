@@ -24,7 +24,8 @@ class AdminGradeRecap extends Component {
         $user = Auth::user();
 
         if (! $user || ! in_array($user->role, ['admin', 'guru'], true)) {
-            abort(403, 'Hanya admin atau guru yang dapat mengakses halaman ini.');
+            redirect()->route('dashboard');
+            return;
         }
 
         $month             = (int) now()->format('m');

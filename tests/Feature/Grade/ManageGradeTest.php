@@ -16,34 +16,36 @@ beforeEach(function () {
 });
 
 describe('ManageGrade — validation', function () {
+    // updatedGrades is a Livewire lifecycle hook — trigger it via ->set() not ->call()
+
     it('adds error when nilai exceeds 100', function () {
         Livewire\Livewire::test(ManageGrade::class)
-            ->call('updatedGrades', 101, '1.uts')
+            ->set('grades.1.uts', 101)
             ->assertHasErrors(['grades.1.uts']);
     });
 
     it('adds error when nilai is negative', function () {
         Livewire\Livewire::test(ManageGrade::class)
-            ->call('updatedGrades', -1, '1.uts')
+            ->set('grades.1.uts', -1)
             ->assertHasErrors(['grades.1.uts']);
     });
 
     it('clears error when nilai corrected to valid range', function () {
         Livewire\Livewire::test(ManageGrade::class)
-            ->call('updatedGrades', 101, '1.uts')
-            ->call('updatedGrades', 85, '1.uts')
+            ->set('grades.1.uts', 101)
+            ->set('grades.1.uts', 85)
             ->assertHasNoErrors(['grades.1.uts']);
     });
 
     it('accepts boundary nilai of 0', function () {
         Livewire\Livewire::test(ManageGrade::class)
-            ->call('updatedGrades', 0, '1.uts')
+            ->set('grades.1.uts', 0)
             ->assertHasNoErrors(['grades.1.uts']);
     });
 
     it('accepts boundary nilai of 100', function () {
         Livewire\Livewire::test(ManageGrade::class)
-            ->call('updatedGrades', 100, '1.uts')
+            ->set('grades.1.uts', 100)
             ->assertHasNoErrors(['grades.1.uts']);
     });
 });

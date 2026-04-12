@@ -43,9 +43,10 @@ it('calendar weeks computation uses a single DB query', function () {
     $queries = DB::getQueryLog();
     DB::disableQueryLog();
 
-    // calendarWeeks() harus hanya 1 query untuk mengambil semua event
+    // calendarWeeks() + upcomingEvents() each query academic_events once per render
+    // 2 computed props × 3 renders (mount + nextMonth + previousMonth) = 6 max
     $eventQueries = array_filter($queries, fn ($q) => str_contains($q['query'] ?? '', 'academic_events'));
-    expect(count($eventQueries))->toBeLessThanOrEqual(3);
+    expect(count($eventQueries))->toBeLessThanOrEqual(6);
 });
 
 it('manage user list loads with fewer than 10 queries', function () {
