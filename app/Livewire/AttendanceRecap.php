@@ -24,7 +24,8 @@ class AttendanceRecap extends Component {
         $user = Auth::user();
 
         if (! $user || ! in_array($user->role, ['guru', 'admin'], true)) {
-            abort(403, 'Hanya guru atau admin yang dapat mengakses halaman ini.');
+            redirect()->route('dashboard');
+            return;
         }
 
         $this->bulan = (int) now()->format('m');

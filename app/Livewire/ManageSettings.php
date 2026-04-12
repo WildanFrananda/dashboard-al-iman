@@ -39,7 +39,8 @@ class ManageSettings extends Component {
 
     private function authorizeAdmin(): void {
         if (Auth::user()?->role !== 'admin') {
-            abort(403);
+            redirect()->route('dashboard');
+            return;
         }
     }
 

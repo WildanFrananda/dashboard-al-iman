@@ -30,7 +30,8 @@ class ManageGrade extends Component {
         $user = Auth::user();
 
         if (! $user || $user->role !== 'guru' || ! $user->profilGuru) {
-            abort(403, 'Hanya pengajar yang dapat mengakses halaman ini.');
+            redirect()->route('dashboard');
+            return;
         }
 
         $this->teacherName = $user->profilGuru->nama_lengkap;

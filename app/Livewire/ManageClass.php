@@ -8,6 +8,7 @@ use App\Models\Kelas;
 use App\Models\ProfilGuru;
 use App\Models\ProfilMurid;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -76,7 +77,12 @@ class ManageClass extends Component {
 
     public function save() {
         $this->validate([
-            'kode_kelas' => 'required|string|max:20|unique:kelas,kode_kelas,'.$this->editingId,
+            'kode_kelas' => [
+                'required', 'string', 'max:20',
+                $this->editingId
+                    ? Rule::unique('kelas', 'kode_kelas')->ignore($this->editingId)
+                    : Rule::unique('kelas', 'kode_kelas'),
+            ],
             'nama_kelas' => 'required|string|max:100',
             'tahun_ajaran' => 'required|string|max:20',
             'wali_kelas_id' => 'nullable|exists:profil_guru,id',
