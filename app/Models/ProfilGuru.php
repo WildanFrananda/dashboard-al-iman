@@ -29,4 +29,8 @@ class ProfilGuru extends Model {
     public function kelasWali() {
         return $this->hasMany(Kelas::class, 'wali_kelas_id');
     }
+
+    public function nilais() {
+        return $this->hasMany(Nilai::class, 'guru_id');
+    }
 }

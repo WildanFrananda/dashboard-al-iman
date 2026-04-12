@@ -1,37 +1,10 @@
 <div class="space-y-6">
     
     <!-- 1. Hero Banner Section -->
-    <div class="relative overflow-hidden rounded-3xl bg-blue-600 shadow-md">
-        <!-- Background Pattern (Optional) -->
-        <div class="absolute inset-0 bg-gradient-to-r from-blue-700 to-blue-500 opacity-90"></div>
-        
-        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between p-6 md:p-10 text-white">
-            <div class="mb-6 md:mb-0 max-w-lg">
-                <div class="flex items-center gap-2 mb-4">
-                     <div class="bg-white/20 p-1.5 rounded-lg">
-                        <img src="https://placehold.co/30x30/transparent/white?text=S" alt="Logo Small" class="w-6 h-6">
-                     </div>
-                     <div>
-                         <h3 class="font-bold text-sm leading-tight">Al-Iman <br> Islamic School</h3>
-                     </div>
-                </div>
-                <h2 class="font-heading text-2xl md:text-4xl font-bold leading-tight mb-2">
-                    Pengembangan Bakat <br> dan Minat Siswa.
-                </h2>
-                <!-- Hashtag decoration -->
-                <div class="absolute top-4 right-4 md:right-10 md:top-8 opacity-20">
-                    <span class="font-heading font-black text-4xl">#Berakhlak<br>#Qur'ani</span>
-                </div>
-            </div>
-
-            <!-- Image Hero -->
-            <div class="relative mt-4 md:mt-0">
-                <!-- Placeholder Image Anak Juara -->
-                <img src="https://placehold.co/300x250/transparent/white?text=Student+With+Trophy" 
-                     alt="Student" 
-                     class="h-48 w-auto object-contain md:h-64 drop-shadow-lg transform md:translate-y-4">
-            </div>
-        </div>
+    <div class="overflow-hidden rounded-3xl shadow-md">
+        <img src="{{ asset('img/dashboard.webp') }}"
+             alt="Hero Banner Al-Iman"
+             class="w-full object-cover">
     </div>
 
     <!-- 2. Statistics Grid -->
@@ -136,25 +109,7 @@
         </div>
 
         <!-- Kalender Akademik (Right Side) -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 min-h-[400px]">
-            <h3 class="font-bold text-gray-900 mb-4">Kalender Akademik</h3>
-            <!-- Calendar UI Placeholder -->
-            <div class="w-full h-64 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 text-sm mb-4">
-                Calendar Widget UI
-            </div>
-            <!-- Event List Dummy -->
-            <div class="space-y-3">
-                <div class="flex gap-3 items-center">
-                    <div class="bg-blue-100 text-blue-600 font-bold p-2 rounded text-xs text-center w-10">
-                        12 <br> OKT
-                    </div>
-                    <div>
-                        <p class="text-xs font-bold text-gray-900">Ujian Tengah Semester</p>
-                        <p class="text-[10px] text-gray-500">08:00 - 12:00 WIB</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        @livewire('academic-calendar')
 
     </div>
 

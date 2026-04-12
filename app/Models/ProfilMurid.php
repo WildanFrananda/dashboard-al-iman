@@ -27,6 +27,10 @@ class ProfilMurid extends Model {
         return $this->hasMany(Absensi::class, 'murid_id');
     }
 
+    public function nilais() {
+        return $this->hasMany(Nilai::class, 'murid_id');
+    }
+
     public function kelas() {
         return $this->belongsToMany(Kelas::class, 'kelas_murid', 'murid_id', 'kelas_id')
             ->withPivot('tahun_ajaran')
