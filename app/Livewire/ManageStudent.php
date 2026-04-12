@@ -141,6 +141,16 @@ class ManageStudent extends Component {
         }
     }
 
+    public function delete(int $id): void {
+        $profil = ProfilMurid::with('user')->findOrFail($id);
+        $user   = $profil->user;
+        $profil->delete();
+        if ($user) {
+            $user->delete();
+        }
+        session()->flash('message', 'Data murid berhasil dihapus.');
+    }
+
     public function edit($id) {
         $profil = ProfilMurid::with('user', 'kelas')->findOrFail($id);
         $this->editingId = $profil->id;
