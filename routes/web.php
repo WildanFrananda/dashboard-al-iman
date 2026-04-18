@@ -1,12 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
+use App\Livewire\AdminGradeRecap;
 use App\Livewire\Attendance;
+use App\Livewire\AttendanceRecap;
 use App\Livewire\Auth\Login;
 use App\Livewire\Dashboard;
+use App\Livewire\ManageClass;
+use App\Livewire\ManageGrade;
+use App\Livewire\ManageSchedule;
+use App\Livewire\ManageSettings;
+use App\Livewire\ManageStudent;
+use App\Livewire\ManageSubject;
+use App\Livewire\ManageUser;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
+use App\Livewire\StudentGrade;
+use App\Livewire\TeacherAttendance;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -21,10 +34,23 @@ Route::get('/error', function () {
 
 Route::get('/login', Login::class)->name('login');
 
-Route::get('/dashboard', Dashboard::class)->name('dashboard');
-Route::get('/attendance', Attendance::class)->name('attendance');
-
 Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', Dashboard::class)->name('dashboard');
+    Route::get('/attendance', Attendance::class)->name('attendance');
+    Route::get('/attendance-recap', AttendanceRecap::class)->name('attendance-recap');
+    Route::get('/teacher-attendance', TeacherAttendance::class)->name('teacher-attendance');
+
+    // Penilaian (Nilai)
+    Route::get('/manage-grade', ManageGrade::class)->name('manage-grade');          // Guru
+    Route::get('/student-grade', StudentGrade::class)->name('student-grade');       // Murid
+    Route::get('/admin-grade-recap', AdminGradeRecap::class)->name('admin-grade-recap'); // Admin
+    Route::get('/manage-user', ManageUser::class)->name('manage-user');
+    Route::get('/manage-subject', ManageSubject::class)->name('manage-subject');
+    Route::get('/manage-class', ManageClass::class)->name('manage-class');
+    Route::get('/manage-schedule', ManageSchedule::class)->name('manage-schedule');
+    Route::get('/manage-student', ManageStudent::class)->name('manage-student');
+    Route::get('/manage-settings', ManageSettings::class)->name('manage-settings');
+
     Route::redirect('settings', 'settings/profile');
 
     Route::get('settings/profile', Profile::class)->name('profile.edit');
@@ -35,7 +61,7 @@ Route::middleware(['auth'])->group(function () {
         ->middleware(
             when(
                 Features::canManageTwoFactorAuthentication()
-                    && Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword'),
+                && Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword'),
                 ['password.confirm'],
                 [],
             ),
@@ -43,4 +69,4 @@ Route::middleware(['auth'])->group(function () {
         ->name('two-factor.show');
 });
 
-Route::get('/health', fn() => response()->json(['status' => 'ok']));
+Route::get('/health', fn () => response()->json(['status' => 'ok']));

@@ -8,8 +8,17 @@
         <testsuite name="Unit">
             <directory>tests/Unit</directory>
         </testsuite>
+        <testsuite name="Integration">
+            <directory>tests/Integration</directory>
+        </testsuite>
         <testsuite name="Feature">
             <directory>tests/Feature</directory>
+        </testsuite>
+        <testsuite name="Security">
+            <directory>tests/Feature/Security</directory>
+        </testsuite>
+        <testsuite name="Performance">
+            <directory>tests/Feature/Performance</directory>
         </testsuite>
     </testsuites>
     <source>
@@ -31,5 +40,7 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <env name="SENTRY_LARAVEL_DSN" value=""/>
+        <env name="OCTANE_SERVER" value=""/>
     </php>
 </phpunit>

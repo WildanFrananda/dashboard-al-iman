@@ -1,0 +1,3 @@
+SQLSTATE[23514]: Check violation: 7 ERROR:  new row for relation "subjects" violates check constraint "subjects_category_check"
+DETAIL:  Failing row contains (11, Matematika Dasar, MTK, Umum, t, 2026-03-26 08:29:01, 2026-03-26 08:29:01). (Connection: pgsql, SQL: insert into "subjects" ("subject_code", "subject_name", "category", "is_active", "updated_at", "created_at") values (MTK, Matematika Dasar, Umum, 1, 2026-03-26 08:29:01, 2026-03-26 08:29:01) returning "id")
+/app/vendor/laravel/framework/src/Illuminate/Database/Connection.php:826

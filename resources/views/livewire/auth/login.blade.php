@@ -84,24 +84,23 @@
         </div>
 
         <!-- Main Button -->
-        <button 
+        <flux:button 
             type="submit" 
-            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            wire:loading.attr="disabled"
+            variant="primary" 
+            class="w-full !bg-brand-600 hover:!bg-brand-700 !border-0"
         >
-            <span wire:loading.remove>Sign in</span>
-            <span wire:loading>Signing in...</span>
-        </button>
+            Sign in
+        </flux:button>
 
         <!-- Google Button -->
-        <button 
+        <flux:button 
             type="button" 
-            class="w-full flex justify-center items-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-100 transition-colors"
+            variant="outline" 
+            class="w-full text-gray-700 flex items-center justify-center"
         >
-            <!-- Google Logo Placeholder -->
             <img src="{{ asset('img/google.png') }}" alt="Google" class="w-5 h-5 mr-2">
             Sign in with Google
-        </button>
+        </flux:button>
 
     </form>
 

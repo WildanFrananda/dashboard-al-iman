@@ -1,42 +1,45 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Auth;
 
-use Livewire\Component;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
+use Livewire\Component;
 
 #[Layout('layouts.auth')]
 #[Title('Login - Al-Iman School')]
-class Login extends Component
-{
-    // Dummy Properties
+class Login extends Component {
     public $email = '';
+
     public $password = '';
+
     public $remember = false;
 
-    // Validation Rules (Visual feedback purpose)
     protected $rules = [
         'email' => 'required|email',
         'password' => 'required|min:6',
     ];
 
-    public function mount()
-    {
-        // Optional: Pre-fill for prototype demo purposes
-        $this->email = 'demo@aliman.sch.id';
+    public function mount() {
+        // $this->email = 'demo@aliman.sch.id';
     }
 
-    public function login()
-    {
+    public function login() {
         $this->validate();
-        sleep(1); 
 
-        return redirect()->route('dashboard');
+        if (Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
+            session()->regenerate();
+
+            return redirect()->intended(route('dashboard'));
+        }
+
+        $this->addError('email', 'The provided credentials do not match our records.');
     }
 
-    public function render()
-    {
+    public function render() {
         return view('livewire.auth.login');
     }
 }

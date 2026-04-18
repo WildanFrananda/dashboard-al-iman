@@ -64,17 +64,17 @@ tinker: ## Laravel Tinker
 	docker compose -f docker-compose.dev.yml exec app php artisan tinker
 
 # Assets
-npm-dev: ## Run npm dev
-	docker compose -f docker-compose.dev.yml exec app npm run dev
+pnpm-dev: ## Run npm dev
+	docker compose -f docker-compose.dev.yml exec app pnpm dev
 
-npm-build: ## Build assets for production
-	docker compose -f docker-compose.dev.yml exec app npm run build
+pnpm-build: ## Build assets for production
+	docker compose -f docker-compose.dev.yml exec app pnpm build
 
-npm-ci: ## Install npm dependencies
-	docker compose -f docker-compose.dev.yml exec app npm ci
+pnpm-ci: ## Install pnpm dependencies
+	docker compose -f docker-compose.dev.yml exec app pnpm install
 
-npm-watch: ## Watch assets changes
-	docker compose -f docker-compose.dev.yml exec app npm run dev -- --watch
+pnpm-watch: ## Watch assets changes
+	docker compose -f docker-compose.dev.yml exec app pnpm dev --watch
 
 # Database
 db-shell: ## Access PostgreSQL shell

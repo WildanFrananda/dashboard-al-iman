@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Settings;
 
 use Illuminate\Support\Facades\Auth;
@@ -7,8 +9,7 @@ use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 
-class Password extends Component
-{
+class Password extends Component {
     public string $current_password = '';
 
     public string $password = '';
@@ -18,8 +19,7 @@ class Password extends Component
     /**
      * Update the password for the currently authenticated user.
      */
-    public function updatePassword(): void
-    {
+    public function updatePassword(): void {
         try {
             $validated = $this->validate([
                 'current_password' => ['required', 'string', 'current_password'],

@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\User;
 use Laravel\Fortify\Features;
 use Livewire\Livewire;
 
 beforeEach(function () {
-    if (! Features::canManageTwoFactorAuthentication()) {
+    if (!Features::canManageTwoFactorAuthentication()) {
         $this->markTestSkipped('Two-factor authentication is not enabled.');
     }
 

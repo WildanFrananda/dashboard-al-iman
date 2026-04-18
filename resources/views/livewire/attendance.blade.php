@@ -1,7 +1,7 @@
-<div class="space-y-6">
+<div class="flex flex-col gap-6 h-full">
     
     <!-- 1. SUMMARY CARDS SECTION -->
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 shrink-0">
         
         <!-- Card: Hadir (Green) -->
         <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-4">
@@ -60,7 +60,7 @@
     </div>
 
     <!-- 2. ATTENDANCE HISTORY LIST -->
-    <div class="bg-white rounded-[20px] shadow-sm border border-gray-100 overflow-hidden min-h-[500px]">
+    <div class="bg-white rounded-[20px] shadow-sm flex-1 flex flex-col border border-gray-100 overflow-hidden">
         
         <!-- Header List -->
         <!-- Menambahkan border-b agar terpisah jelas dari konten -->
