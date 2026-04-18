@@ -1,0 +1,477 @@
+{
+  "version": "1.0.0",
+  "title": "Dashboard Al-Iman - Arsitektur Sistem",
+  "description": "Arsitektur lengkap sistem manajemen sekolah Dashboard Al-Iman berbasis Laravel 12 + Livewire 3",
+  "colors": [
+    { "id": "blue",   "value": "#3b82f6" },
+    { "id": "green",  "value": "#22c55e" },
+    { "id": "pink",   "value": "#ec4899" },
+    { "id": "amber",  "value": "#f59e0b" },
+    { "id": "violet", "value": "#7c3aed" },
+    { "id": "gray",   "value": "#6b7280" },
+    { "id": "red",    "value": "#ef4444" }
+  ],
+  "icons": [],
+  "items": [
+    {
+      "id": "browser",
+      "name": "Browser Client",
+      "description": "Tailwind CSS + Alpine.js + Livewire 3"
+    },
+    {
+      "id": "mobile",
+      "name": "Mobile Client",
+      "description": "REST API Consumer via Sanctum Token"
+    },
+    {
+      "id": "caddy",
+      "name": "Caddy / FrankenPHP",
+      "description": "Web Server — TLS Termination & Reverse Proxy"
+    },
+    {
+      "id": "octane",
+      "name": "Laravel Octane",
+      "description": "FrankenPHP Worker Mode (2 workers, 1000 req/worker)"
+    },
+    {
+      "id": "queue",
+      "name": "Queue Worker",
+      "description": "Redis Queue Driver — php artisan queue:work"
+    },
+    {
+      "id": "supervisor",
+      "name": "Supervisor",
+      "description": "Process Manager untuk Octane & Queue Worker"
+    },
+    {
+      "id": "postgres",
+      "name": "PostgreSQL 17",
+      "description": "Primary Database — 11 Models, 19 Migrations"
+    },
+    {
+      "id": "redis",
+      "name": "Redis 7",
+      "description": "Cache + Session + Queue Backend"
+    },
+    {
+      "id": "minio",
+      "name": "MinIO",
+      "description": "S3-Compatible Object Storage"
+    },
+    {
+      "id": "sentry",
+      "name": "Sentry",
+      "description": "Error Tracking & Monitoring (External)"
+    },
+    {
+      "id": "mailpit",
+      "name": "Mailpit",
+      "description": "Mail Testing Dev — SMTP :1025, UI :8025"
+    },
+    {
+      "id": "admin_role",
+      "name": "Role: Admin",
+      "description": "Akses penuh: kelola user, kelas, jadwal, nilai, pengaturan"
+    },
+    {
+      "id": "guru_role",
+      "name": "Role: Guru",
+      "description": "Input nilai, absensi murid, pertemuan kelas"
+    },
+    {
+      "id": "murid_role",
+      "name": "Role: Murid",
+      "description": "Lihat nilai, absensi, jadwal pelajaran"
+    },
+    {
+      "id": "fortify",
+      "name": "Laravel Fortify",
+      "description": "Session Login + 2FA TOTP + Email Verification"
+    },
+    {
+      "id": "sanctum",
+      "name": "Laravel Sanctum",
+      "description": "API Token Authentication"
+    },
+    {
+      "id": "livewire",
+      "name": "Livewire 3",
+      "description": "21 Komponen Reaktif — SSR Full-Stack"
+    },
+    {
+      "id": "eloquent",
+      "name": "Eloquent ORM",
+      "description": "11 Models + Eager Loading (with()) — cegah N+1"
+    },
+    {
+      "id": "cache_layer",
+      "name": "Cache Layer",
+      "description": "Redis Cache — auto-save 5s, TTL configurable"
+    }
+  ],
+  "views": [
+    {
+      "id": "infrastructure-view",
+      "name": "1. Arsitektur Infrastruktur",
+      "description": "Gambaran infrastruktur lengkap: Docker containers, services, dan koneksi antar komponen",
+      "items": [
+        { "id": "browser",    "tile": { "x": 1,  "y": 16 } },
+        { "id": "mobile",     "tile": { "x": 7,  "y": 16 } },
+        { "id": "caddy",      "tile": { "x": 4,  "y": 12 } },
+        { "id": "octane",     "tile": { "x": 2,  "y": 8  } },
+        { "id": "queue",      "tile": { "x": 7,  "y": 8  } },
+        { "id": "supervisor", "tile": { "x": 4,  "y": 6  } },
+        { "id": "postgres",   "tile": { "x": 1,  "y": 3  } },
+        { "id": "redis",      "tile": { "x": 5,  "y": 3  } },
+        { "id": "minio",      "tile": { "x": 9,  "y": 3  } },
+        { "id": "sentry",     "tile": { "x": 2,  "y": 0  } },
+        { "id": "mailpit",    "tile": { "x": 7,  "y": 0  } }
+      ],
+      "rectangles": [
+        {
+          "id": "rect-client",
+          "color": "blue",
+          "from": { "x": -1, "y": 14 },
+          "to":   { "x": 10, "y": 18 }
+        },
+        {
+          "id": "rect-gateway",
+          "color": "amber",
+          "from": { "x": 2,  "y": 10 },
+          "to":   { "x": 7,  "y": 14 }
+        },
+        {
+          "id": "rect-app",
+          "color": "green",
+          "from": { "x": 0,  "y": 4  },
+          "to":   { "x": 10, "y": 10 }
+        },
+        {
+          "id": "rect-data",
+          "color": "pink",
+          "from": { "x": -1, "y": 1  },
+          "to":   { "x": 11, "y": 5  }
+        },
+        {
+          "id": "rect-external",
+          "color": "gray",
+          "from": { "x": 0,  "y": -2 },
+          "to":   { "x": 10, "y": 2  }
+        }
+      ],
+      "connectors": [
+        {
+          "id": "conn-browser-caddy",
+          "color": "blue",
+          "anchors": [
+            { "id": "a-bc-1", "ref": { "item": "browser" } },
+            { "id": "a-bc-2", "ref": { "item": "caddy"   } }
+          ],
+          "style": "SOLID",
+          "lineType": "SINGLE",
+          "showArrow": true,
+          "description": "HTTP/HTTPS + WebSocket"
+        },
+        {
+          "id": "conn-mobile-caddy",
+          "color": "blue",
+          "anchors": [
+            { "id": "a-mc-1", "ref": { "item": "mobile" } },
+            { "id": "a-mc-2", "ref": { "item": "caddy"  } }
+          ],
+          "style": "DASHED",
+          "lineType": "SINGLE",
+          "showArrow": true,
+          "description": "HTTPS + Bearer Token"
+        },
+        {
+          "id": "conn-caddy-octane",
+          "color": "amber",
+          "anchors": [
+            { "id": "a-co-1", "ref": { "item": "caddy"  } },
+            { "id": "a-co-2", "ref": { "item": "octane" } }
+          ],
+          "style": "SOLID",
+          "lineType": "SINGLE",
+          "showArrow": true,
+          "description": "FastCGI / Worker Mode"
+        },
+        {
+          "id": "conn-supervisor-octane",
+          "color": "green",
+          "anchors": [
+            { "id": "a-so-1", "ref": { "item": "supervisor" } },
+            { "id": "a-so-2", "ref": { "item": "octane"     } }
+          ],
+          "style": "DOTTED",
+          "lineType": "SINGLE",
+          "showArrow": false,
+          "description": "Process Manager"
+        },
+        {
+          "id": "conn-supervisor-queue",
+          "color": "green",
+          "anchors": [
+            { "id": "a-sq-1", "ref": { "item": "supervisor" } },
+            { "id": "a-sq-2", "ref": { "item": "queue"      } }
+          ],
+          "style": "DOTTED",
+          "lineType": "SINGLE",
+          "showArrow": false,
+          "description": "Process Manager"
+        },
+        {
+          "id": "conn-octane-postgres",
+          "color": "pink",
+          "anchors": [
+            { "id": "a-op-1", "ref": { "item": "octane"   } },
+            { "id": "a-op-2", "ref": { "item": "postgres" } }
+          ],
+          "style": "SOLID",
+          "lineType": "SINGLE",
+          "showArrow": true,
+          "description": "PDO / Eloquent ORM"
+        },
+        {
+          "id": "conn-octane-redis",
+          "color": "red",
+          "anchors": [
+            { "id": "a-or-1", "ref": { "item": "octane" } },
+            { "id": "a-or-2", "ref": { "item": "redis"  } }
+          ],
+          "style": "SOLID",
+          "lineType": "SINGLE",
+          "showArrow": true,
+          "description": "Predis — Cache & Session"
+        },
+        {
+          "id": "conn-octane-minio",
+          "color": "violet",
+          "anchors": [
+            { "id": "a-om-1", "ref": { "item": "octane" } },
+            { "id": "a-om-2", "ref": { "item": "minio"  } }
+          ],
+          "style": "SOLID",
+          "lineType": "SINGLE",
+          "showArrow": true,
+          "description": "S3 SDK / File Storage"
+        },
+        {
+          "id": "conn-queue-redis",
+          "color": "red",
+          "anchors": [
+            { "id": "a-qr-1", "ref": { "item": "queue" } },
+            { "id": "a-qr-2", "ref": { "item": "redis" } }
+          ],
+          "style": "DASHED",
+          "lineType": "SINGLE",
+          "showArrow": true,
+          "description": "Queue Jobs Consumer"
+        },
+        {
+          "id": "conn-queue-postgres",
+          "color": "pink",
+          "anchors": [
+            { "id": "a-qp-1", "ref": { "item": "queue"    } },
+            { "id": "a-qp-2", "ref": { "item": "postgres" } }
+          ],
+          "style": "DASHED",
+          "lineType": "SINGLE",
+          "showArrow": true,
+          "description": "Job Processing / DB Write"
+        },
+        {
+          "id": "conn-octane-sentry",
+          "color": "gray",
+          "anchors": [
+            { "id": "a-os-1", "ref": { "item": "octane" } },
+            { "id": "a-os-2", "ref": { "item": "sentry" } }
+          ],
+          "style": "DOTTED",
+          "lineType": "SINGLE",
+          "showArrow": true,
+          "description": "Error Reports"
+        },
+        {
+          "id": "conn-octane-mailpit",
+          "color": "gray",
+          "anchors": [
+            { "id": "a-oml-1", "ref": { "item": "octane"  } },
+            { "id": "a-oml-2", "ref": { "item": "mailpit" } }
+          ],
+          "style": "DOTTED",
+          "lineType": "SINGLE",
+          "showArrow": true,
+          "description": "SMTP Email (Dev)"
+        }
+      ],
+      "textBoxes": []
+    },
+    {
+      "id": "application-view",
+      "name": "2. Lapisan Aplikasi & Role Access",
+      "description": "Alur autentikasi, role-based access, dan komponen Livewire",
+      "items": [
+        { "id": "admin_role",  "tile": { "x": 1,  "y": 14 } },
+        { "id": "guru_role",   "tile": { "x": 6,  "y": 14 } },
+        { "id": "murid_role",  "tile": { "x": 11, "y": 14 } },
+        { "id": "fortify",     "tile": { "x": 3,  "y": 10 } },
+        { "id": "sanctum",     "tile": { "x": 8,  "y": 10 } },
+        { "id": "livewire",    "tile": { "x": 3,  "y": 6  } },
+        { "id": "eloquent",    "tile": { "x": 8,  "y": 6  } },
+        { "id": "cache_layer", "tile": { "x": 6,  "y": 2  } },
+        { "id": "postgres",    "tile": { "x": 3,  "y": 0  } },
+        { "id": "redis",       "tile": { "x": 9,  "y": 0  } }
+      ],
+      "rectangles": [
+        {
+          "id": "rect-roles",
+          "color": "blue",
+          "from": { "x": -1, "y": 12 },
+          "to":   { "x": 13, "y": 16 }
+        },
+        {
+          "id": "rect-auth",
+          "color": "amber",
+          "from": { "x": 1,  "y": 8  },
+          "to":   { "x": 11, "y": 12 }
+        },
+        {
+          "id": "rect-livewire-box",
+          "color": "green",
+          "from": { "x": 1,  "y": 4  },
+          "to":   { "x": 11, "y": 8  }
+        },
+        {
+          "id": "rect-db-box",
+          "color": "pink",
+          "from": { "x": 1,  "y": -2 },
+          "to":   { "x": 11, "y": 2  }
+        }
+      ],
+      "connectors": [
+        {
+          "id": "conn-admin-fortify",
+          "color": "blue",
+          "anchors": [
+            { "id": "a-af-1", "ref": { "item": "admin_role" } },
+            { "id": "a-af-2", "ref": { "item": "fortify"    } }
+          ],
+          "style": "SOLID",
+          "lineType": "SINGLE",
+          "showArrow": true,
+          "description": "Session Login + 2FA"
+        },
+        {
+          "id": "conn-guru-fortify",
+          "color": "blue",
+          "anchors": [
+            { "id": "a-gf-1", "ref": { "item": "guru_role" } },
+            { "id": "a-gf-2", "ref": { "item": "fortify"   } }
+          ],
+          "style": "SOLID",
+          "lineType": "SINGLE",
+          "showArrow": true,
+          "description": "Session Login"
+        },
+        {
+          "id": "conn-murid-fortify",
+          "color": "blue",
+          "anchors": [
+            { "id": "a-mf-1", "ref": { "item": "murid_role" } },
+            { "id": "a-mf-2", "ref": { "item": "fortify"    } }
+          ],
+          "style": "SOLID",
+          "lineType": "SINGLE",
+          "showArrow": true,
+          "description": "Session Login"
+        },
+        {
+          "id": "conn-murid-sanctum",
+          "color": "violet",
+          "anchors": [
+            { "id": "a-ms-1", "ref": { "item": "murid_role" } },
+            { "id": "a-ms-2", "ref": { "item": "sanctum"    } }
+          ],
+          "style": "DASHED",
+          "lineType": "SINGLE",
+          "showArrow": true,
+          "description": "API Token (Mobile)"
+        },
+        {
+          "id": "conn-fortify-livewire",
+          "color": "amber",
+          "anchors": [
+            { "id": "a-fl-1", "ref": { "item": "fortify"  } },
+            { "id": "a-fl-2", "ref": { "item": "livewire" } }
+          ],
+          "style": "SOLID",
+          "lineType": "SINGLE",
+          "showArrow": true,
+          "description": "Auth Middleware — Web Routes"
+        },
+        {
+          "id": "conn-sanctum-livewire",
+          "color": "amber",
+          "anchors": [
+            { "id": "a-sl-1", "ref": { "item": "sanctum"  } },
+            { "id": "a-sl-2", "ref": { "item": "livewire" } }
+          ],
+          "style": "DASHED",
+          "lineType": "SINGLE",
+          "showArrow": true,
+          "description": "Token Auth — API Routes"
+        },
+        {
+          "id": "conn-livewire-eloquent",
+          "color": "green",
+          "anchors": [
+            { "id": "a-le-1", "ref": { "item": "livewire" } },
+            { "id": "a-le-2", "ref": { "item": "eloquent" } }
+          ],
+          "style": "SOLID",
+          "lineType": "SINGLE",
+          "showArrow": true,
+          "description": "Query via Model"
+        },
+        {
+          "id": "conn-livewire-cache",
+          "color": "red",
+          "anchors": [
+            { "id": "a-lc-1", "ref": { "item": "livewire"    } },
+            { "id": "a-lc-2", "ref": { "item": "cache_layer" } }
+          ],
+          "style": "DOTTED",
+          "lineType": "SINGLE",
+          "showArrow": true,
+          "description": "Cache::get / Cache::put"
+        },
+        {
+          "id": "conn-eloquent-postgres",
+          "color": "pink",
+          "anchors": [
+            { "id": "a-ep-1", "ref": { "item": "eloquent" } },
+            { "id": "a-ep-2", "ref": { "item": "postgres" } }
+          ],
+          "style": "SOLID",
+          "lineType": "SINGLE",
+          "showArrow": true,
+          "description": "PDO Connection"
+        },
+        {
+          "id": "conn-cache-redis",
+          "color": "red",
+          "anchors": [
+            { "id": "a-cr-1", "ref": { "item": "cache_layer" } },
+            { "id": "a-cr-2", "ref": { "item": "redis"       } }
+          ],
+          "style": "SOLID",
+          "lineType": "SINGLE",
+          "showArrow": true,
+          "description": "Predis Store"
+        }
+      ],
+      "textBoxes": []
+    }
+  ]
+}

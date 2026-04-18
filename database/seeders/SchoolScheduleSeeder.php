@@ -227,7 +227,7 @@ class SchoolScheduleSeeder extends Seeder {
     private function seedGuru(): array {
         $defs = [
             'mtk' => [
-                'email' => 'guru.mtk@sd-aliman.sch.id',
+                'email' => 'guru@email.com',
                 'name' => 'Budi Santoso, S.Pd',
                 'nip' => '197501012000011001',
             ],
