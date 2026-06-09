@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
+use App\Models\ProfilGuru;
+use App\Models\ProfilMurid;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -97,16 +99,39 @@ class ManageUser extends Component {
         }
 
         if ($this->editingId) {
-            User::findOrFail($this->editingId)->update($data);
+            $user = User::findOrFail($this->editingId);
+            $user->update($data);
             session()->flash('user_message', 'User berhasil diperbarui.');
         } else {
             $data['password'] ??= Hash::make($this->form_password);
-            User::create($data);
+            $user = User::create($data);
             session()->flash('user_message', 'User berhasil ditambahkan.');
         }
 
+        // Pastikan profil terkait ada agar user muncul di Manage Murid / Manage Guru.
+        $this->syncProfile($user);
+
         $this->showModal = false;
         $this->resetForm();
+    }
+
+    /**
+     * Buat profil murid/guru jika belum ada, mengikuti role user.
+     * NIS/NIP diisi placeholder sementara (TMP-{id}) untuk dilengkapi admin
+     * di halaman Manage Murid / Manage Guru.
+     */
+    private function syncProfile(User $user): void {
+        if ($user->role === 'murid') {
+            ProfilMurid::firstOrCreate(
+                ['user_id' => $user->id],
+                ['nis' => 'TMP-'.$user->id, 'nama_lengkap' => $user->name, 'status' => 'aktif'],
+            );
+        } elseif ($user->role === 'guru') {
+            ProfilGuru::firstOrCreate(
+                ['user_id' => $user->id],
+                ['nip' => 'TMP-'.$user->id, 'nama_lengkap' => $user->name],
+            );
+        }
     }
 
     public function deleteUser(int $id): void {

@@ -242,6 +242,31 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
+                    @if(!$editingId)
+                    <!-- Pilih Murid (akun dibuat di Manage User, belum di-assign kelas) -->
+                    <div class="sm:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Pilih Murid <span class="text-red-500">*</span>
+                        </label>
+                        <select wire:model="selectedMuridId"
+                                class="w-full border rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0F609B]/30 focus:border-[#0F609B]
+                                       {{ $errors->has('selectedMuridId') ? 'border-red-400 bg-red-50' : 'border-gray-300' }}">
+                            <option value="">-- Pilih murid yang belum di-assign --</option>
+                            @foreach($unassignedMurids as $m)
+                                <option value="{{ $m->id }}">{{ $m->nama_lengkap }} ({{ $m->user->email ?? '-' }})</option>
+                            @endforeach
+                        </select>
+                        @error('selectedMuridId') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
+                        @if($unassignedMurids->isEmpty())
+                            <p class="text-xs text-amber-600 mt-1">
+                                Tidak ada murid yang belum di-assign untuk tahun ajaran {{ $tahun_ajaran }}.
+                                Buat akun murid baru dulu di halaman <span class="font-semibold">Manage User</span>.
+                            </p>
+                        @endif
+                    </div>
+                    @endif
+
+                    @if($editingId)
                     <!-- Nama Panggilan (User) -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">
@@ -265,6 +290,7 @@
                                       {{ $errors->has('email') ? 'border-red-400 bg-red-50' : 'border-gray-300' }}">
                         @error('email') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
                     </div>
+                    @endif
 
                     <!-- NIS -->
                     <div>
@@ -278,18 +304,15 @@
                         @error('nis') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
                     </div>
 
+                    @if($editingId)
                     <!-- Password -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">
                             Password
-                            @if($editingId)
-                                <span class="text-xs font-normal text-gray-400 ml-1">(opsional)</span>
-                            @else
-                                <span class="text-red-500">*</span>
-                            @endif
+                            <span class="text-xs font-normal text-gray-400 ml-1">(opsional)</span>
                         </label>
                         <input type="password" wire:model="password"
-                               placeholder="{{ $editingId ? 'Kosongkan jika tidak ganti' : 'Minimal 6 karakter' }}"
+                               placeholder="Kosongkan jika tidak ganti"
                                class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0F609B]/30 focus:border-[#0F609B]
                                       {{ $errors->has('password') ? 'border-red-400 bg-red-50' : 'border-gray-300' }}">
                         @error('password') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
@@ -306,11 +329,12 @@
                                       {{ $errors->has('nama_lengkap') ? 'border-red-400 bg-red-50' : 'border-gray-300' }}">
                         @error('nama_lengkap') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
                     </div>
+                    @endif
 
                     <!-- Kelas -->
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">
-                            Kelas {{ !$editingId ? '<span class="text-red-500">*</span>' : '' }}
+                            Kelas @if(!$editingId)<span class="text-red-500">*</span>@endif
                         </label>
                         <select wire:model="kelas_id"
                                 class="w-full border rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#0F609B]/30 focus:border-[#0F609B]

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire;
 
-use App\Models\Nilai;
+use App\Support\RaportBuilder;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
@@ -33,6 +33,11 @@ class StudentGrade extends Component {
     }
 
     #[Computed]
+    public function studentInfo(): array {
+        return app(RaportBuilder::class)->studentInfo(Auth::user()->profilMurid, $this->tahunAjaran);
+    }
+
+    #[Computed]
     public function gradeRecords(): array {
         $murid = Auth::user()->profilMurid;
 
@@ -40,44 +45,12 @@ class StudentGrade extends Component {
             return [];
         }
 
-        $nilais = Nilai::where('murid_id', $murid->id)
-            ->where('semester', $this->semester)
-            ->where('tahun_ajaran', $this->tahunAjaran)
-            ->with('subject')
-            ->orderBy('subject_id')
-            ->get();
-
-        // Group by subject → satu baris per mata pelajaran dengan kolom UTS + UAS
-        $grouped = $nilais->groupBy('subject_id');
-
-        $records = [];
-        foreach ($grouped as $subjectNilais) {
-            $uts = $subjectNilais->firstWhere('tipe_nilai', 'UTS');
-            $uas = $subjectNilais->firstWhere('tipe_nilai', 'UAS');
-
-            $records[] = [
-                'subject' => $subjectNilais->first()->subject?->subject_name ?? '-',
-                'uts' => $uts?->nilai,
-                'uas' => $uas?->nilai,
-                'keterangan' => $uts?->keterangan ?? $uas?->keterangan ?? null,
-            ];
-        }
-
-        return $records;
+        return app(RaportBuilder::class)->records($murid, $this->semester, $this->tahunAjaran);
     }
 
     #[Computed]
     public function summary(): array {
-        $records = $this->gradeRecords;
-
-        $utsValues = array_filter(array_column($records, 'uts'), fn ($v) => $v !== null);
-        $uasValues = array_filter(array_column($records, 'uas'), fn ($v) => $v !== null);
-
-        return [
-            'rata_uts' => count($utsValues) > 0 ? round(array_sum($utsValues) / count($utsValues), 1) : null,
-            'rata_uas' => count($uasValues) > 0 ? round(array_sum($uasValues) / count($uasValues), 1) : null,
-            'mapel' => count($records),
-        ];
+        return app(RaportBuilder::class)->summary($this->gradeRecords);
     }
 
     private function currentTahunAjaran(): string {
