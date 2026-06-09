@@ -23,6 +23,8 @@ class ManageGrade extends Component {
 
     public string $tahunAjaran = '';
 
+    public ?int $kkm = 75;
+
     /**
      * $grades[murid_id] = ['uts' => int|null, 'uas' => int|null, 'keterangan' => string]
      */
@@ -119,6 +121,9 @@ class ManageGrade extends Component {
             ->get()
             ->groupBy('murid_id');
 
+        // KKM berlaku se-mata-pelajaran: ambil dari nilai yang sudah ada, fallback 75
+        $this->kkm = $existingNilais->flatten()->pluck('kkm')->filter()->first() ?? 75;
+
         foreach ($schedule->kelas->murids as $murid) {
             $this->students[] = [
                 'id' => $murid->id,
@@ -142,6 +147,7 @@ class ManageGrade extends Component {
             'scheduleId' => 'required|exists:teaching_schedules,id',
             'semester' => 'required|in:1,2',
             'tahunAjaran' => ['required', 'regex:/^\d{4}\/\d{4}$/'],
+            'kkm' => 'required|integer|min:0|max:100',
             'grades.*.uts' => 'nullable|integer|min:0|max:100',
             'grades.*.uas' => 'nullable|integer|min:0|max:100',
             'grades.*.keterangan' => 'nullable|string|max:500',
@@ -186,6 +192,7 @@ class ManageGrade extends Component {
                     [
                         'guru_id' => $guruId,
                         'nilai' => (int) $nilaiInput,
+                        'kkm' => $this->kkm,
                         'keterangan' => $keterangan ?: null,
                     ]
                 );

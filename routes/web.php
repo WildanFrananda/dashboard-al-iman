@@ -20,6 +20,7 @@ use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
 use App\Livewire\StudentGrade;
 use App\Livewire\TeacherAttendance;
+use App\Http\Controllers\RaportController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -43,6 +44,7 @@ Route::middleware(['auth'])->group(function () {
     // Penilaian (Nilai)
     Route::get('/manage-grade', ManageGrade::class)->name('manage-grade');          // Guru
     Route::get('/student-grade', StudentGrade::class)->name('student-grade');       // Murid
+    Route::get('/raport', RaportController::class)->name('raport');                 // Cetak rapor (Murid)
     Route::get('/admin-grade-recap', AdminGradeRecap::class)->name('admin-grade-recap'); // Admin
     Route::get('/manage-user', ManageUser::class)->name('manage-user');
     Route::get('/manage-subject', ManageSubject::class)->name('manage-subject');

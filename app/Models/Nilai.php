@@ -19,6 +19,7 @@ class Nilai extends Model {
         'kelas_id',
         'tipe_nilai',
         'nilai',
+        'kkm',
         'semester',
         'tahun_ajaran',
         'keterangan',
@@ -26,6 +27,7 @@ class Nilai extends Model {
 
     protected $casts = [
         'nilai' => 'integer',
+        'kkm' => 'integer',
         'semester' => 'integer',
     ];
 

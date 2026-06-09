@@ -49,6 +49,16 @@
                     class="w-full md:w-[120px] bg-white border-0 rounded-md px-4 py-2.5 text-sm text-gray-700 focus:ring-2 focus:ring-white">
             </div>
 
+            <!-- KKM (berlaku untuk semua murid pada mata pelajaran ini) -->
+            <div class="w-full md:w-auto flex flex-col gap-1">
+                <label class="text-white/70 text-xs font-medium uppercase tracking-wide">KKM</label>
+                <input type="number" min="0" max="100" wire:model="kkm" placeholder="75"
+                    class="w-full md:w-[90px] bg-white border-0 rounded-md px-4 py-2.5 text-sm text-gray-700 focus:ring-2 focus:ring-white">
+                @error('kkm')
+                    <span class="text-amber-200 text-[10px] font-semibold leading-none">{{ $message }}</span>
+                @enderror
+            </div>
+
             <!-- Submit -->
             <div class="w-full md:w-auto flex flex-col gap-1">
                 <label class="text-white/70 text-xs font-medium uppercase tracking-wide opacity-0 select-none">Aksi</label>

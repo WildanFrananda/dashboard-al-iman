@@ -6,9 +6,9 @@ namespace App\Livewire;
 
 use App\Models\Kelas;
 use App\Models\ProfilMurid;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -41,6 +41,9 @@ class ManageStudent extends Component {
     public $kelas_id = null;
 
     public $tahun_ajaran = '';
+
+    // Daftarkan murid baru: pilih murid (profil_murid) yang belum di-assign ke kelas
+    public $selectedMuridId = null;
 
     // Edit state
     public $editingId = null; // ProfilMurid ID
@@ -82,23 +85,31 @@ class ManageStudent extends Component {
         $this->status = 'aktif';
         $this->kelas_id = null;
         $this->editingId = null;
+        $this->selectedMuridId = null;
     }
 
     public function save() {
         $rules = [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,'.($this->editingId ? ProfilMurid::find($this->editingId)->user_id : ''),
-            'nis' => 'required|string|unique:profil_murid,nis,'.$this->editingId,
-            'nama_lengkap' => 'required|string|max:255',
+            'nis' => ['required', 'string', Rule::unique('profil_murid', 'nis')->ignore($this->editingId ?? $this->selectedMuridId)],
             'status' => 'required|in:aktif,lulus,pindah,keluar',
         ];
 
-        if (!$this->editingId) {
-            $rules['password'] = 'required|min:6';
+        if ($this->editingId) {
+            $userId = ProfilMurid::find($this->editingId)?->user_id;
+            $rules['name'] = 'required|string|max:255';
+            $rules['email'] = ['required', 'email', Rule::unique('users', 'email')->ignore($userId)];
+            $rules['nama_lengkap'] = 'required|string|max:255';
+            $rules['password'] = 'nullable|min:6';
+        } else {
+            // Daftarkan murid: pilih murid yang sudah punya akun (dari Manage User) lalu assign ke kelas
+            $rules['selectedMuridId'] = 'required|exists:profil_murid,id';
             $rules['kelas_id'] = 'required|exists:kelas,id';
         }
 
-        $this->validate($rules);
+        $this->validate($rules, [
+            'selectedMuridId.required' => 'Pilih murid yang akan didaftarkan.',
+            'kelas_id.required' => 'Pilih kelas.',
+        ]);
 
         DB::beginTransaction();
         try {
@@ -126,21 +137,17 @@ class ManageStudent extends Component {
                     ]);
                 }
             } else {
-                $user = User::create([
-                    'name' => $this->name,
-                    'email' => $this->email,
-                    'password' => Hash::make($this->password),
-                    'role' => 'murid',
-                ]);
+                // Assign murid yang sudah ada (akunnya dibuat di Manage User)
+                $profil = ProfilMurid::findOrFail($this->selectedMuridId);
 
-                $profil = ProfilMurid::create([
-                    'user_id' => $user->id,
+                $profil->update([
                     'nis' => $this->nis,
-                    'nama_lengkap' => $this->nama_lengkap,
                     'status' => $this->status,
                 ]);
 
-                $profil->kelas()->attach($this->kelas_id, ['tahun_ajaran' => $this->tahun_ajaran]);
+                $profil->kelas()->syncWithoutDetaching([
+                    $this->kelas_id => ['tahun_ajaran' => $this->tahun_ajaran],
+                ]);
             }
 
             DB::commit();
@@ -195,6 +202,15 @@ class ManageStudent extends Component {
             ->orderBy('nama_lengkap')
             ->paginate(10);
 
+        // Murid yang belum di-assign ke kelas manapun pada tahun ajaran ini.
+        // Catatan: di dalam whereDoesntHave, wherePivot() tidak berlaku — rujuk kolom pivot langsung.
+        $unassignedMurids = ProfilMurid::with('user')
+            ->whereDoesntHave('kelas', function ($q) {
+                $q->where('kelas_murid.tahun_ajaran', $this->tahun_ajaran);
+            })
+            ->orderBy('nama_lengkap')
+            ->get();
+
         $classes = Kelas::orderBy('nama_kelas')->get();
         $availableYears = DB::table('kelas_murid')->distinct()->pluck('tahun_ajaran')->toArray();
         // Ensure current year and potential next year are in the list
@@ -208,6 +224,7 @@ class ManageStudent extends Component {
             'students' => $students,
             'classes' => $classes,
             'availableYears' => $availableYears,
+            'unassignedMurids' => $unassignedMurids,
         ]);
     }
 }
